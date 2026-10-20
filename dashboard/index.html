@@ -188,6 +188,40 @@ tr.det td{background:var(--card2);white-space:normal;text-align:left;padding:10p
 .callout.risk svg{color:var(--dn-ink)}
 .verdict{font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.25}
 
+/* ═════════ STRUTTURA (analisi tecnica) ═════════ */
+.ta-bar{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+.ta-bar .chips{margin-bottom:0;margin-right:0;padding-right:0;flex:1;min-width:0}
+.ta-bar .inp{width:110px;flex:none;font-family:var(--font)}
+.score{position:relative;height:6px;border-radius:3px;margin:14px 0 4px;background:linear-gradient(90deg,var(--dn-soft),var(--fill) 50%,var(--a-soft))}
+.score i{position:absolute;top:-4px;width:4px;height:14px;border-radius:2px;background:var(--t1);transform:translateX(-50%)}
+.score-l{display:flex;justify-content:space-between;font-size:11px;color:var(--t3)}
+.notes{margin-top:12px;display:grid;gap:6px;font-size:13.5px;color:var(--t2);line-height:1.45}
+.notes div{padding-left:14px;position:relative}
+.notes div::before{content:"";position:absolute;left:2px;top:.6em;width:5px;height:5px;border-radius:50%;background:var(--a)}
+.tfrow{cursor:pointer}
+.tfrow[aria-current="true"]{background:var(--card2)}
+.tfrow .c b{font-family:var(--mono);font-size:13px;min-width:30px}
+.seq{display:inline-flex;gap:3px;flex-wrap:wrap}
+.seq span{font-family:var(--mono);font-size:10.5px;font-weight:600;padding:1px 4px;border-radius:4px;background:var(--fill);color:var(--t2)}
+.seq .up{background:var(--a-soft);color:var(--a-ink)} .seq .dn{background:var(--dn-soft);color:var(--dn-ink)}
+.tag.dn{background:var(--dn-soft);color:var(--dn-ink)}
+.ta-chart{position:relative;margin-top:14px;touch-action:pan-y}
+.ta-chart svg{display:block;width:100%;overflow:visible}
+.ta-chart text{font-family:var(--mono);font-size:10.5px}
+.lvl{display:grid;grid-template-columns:auto 1fr auto;gap:2px 12px;align-items:center;padding:11px 16px;border-top:.5px solid var(--sep)}
+.lvl:first-child{border-top:0}
+.lvl .p{font-family:var(--mono);font-weight:600;font-size:14.5px;display:flex;align-items:center;gap:6px}
+.lvl .f{height:4px;border-radius:2px;background:var(--fill);overflow:hidden}
+.lvl .f i{display:block;height:100%;border-radius:2px}
+.lvl .d{font-family:var(--mono);font-size:12.5px;color:var(--t3);text-align:right}
+.lvl small{grid-column:1/-1;font-size:11.5px;color:var(--t3);line-height:1.4}
+.lvl.now{background:var(--card2)}
+.scen{display:grid;gap:10px}
+@media (min-width:700px){.scen{grid-template-columns:1fr 1fr}}
+.scen .callout{margin-top:0;flex-direction:column;gap:6px}
+.scen .callout b{font-size:14.5px}
+.scen .callout div{font-family:var(--mono);font-size:12.5px;color:var(--t2);line-height:1.55}
+
 .empty{text-align:center;padding:30px 20px;color:var(--t3);font-size:14px}
 .empty b{display:block;color:var(--t1);font-size:16px;margin-bottom:6px;font-weight:600}
 .sk{border-radius:8px;background:linear-gradient(90deg,var(--fill) 25%,var(--fill2) 50%,var(--fill) 75%);background-size:200% 100%;height:14px}
@@ -236,6 +270,7 @@ footer{font-size:12px;color:var(--t3);text-align:center;margin-top:32px;line-hei
     <button class="tab" role="tab" data-v="ordini" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h11M4 12h7M4 17h11"/><path d="M17 10l3 2-3 2"/></svg><span>Ordini</span><b class="badge" id="bOrd"></b></button>
     <button class="tab" role="tab" data-v="trade" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M9 9v11"/></svg><span>Operazioni</span></button>
     <button class="tab" role="tab" data-v="bt" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V5M4 19h16"/><path d="M7 15l4-4 3 3 5-6"/></svg><span>Backtest</span></button>
+    <button class="tab" role="tab" data-v="ta" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l4-6 4 3 4-8 6 9"/><path d="M3 21h18" opacity=".5"/></svg><span>Struttura</span></button>
   </div></nav>
 
 <main>
@@ -285,6 +320,16 @@ footer{font-size:12px;color:var(--t3);text-align:center;margin-top:32px;line-hei
   <div id="btOut" style="margin-top:12px"></div>
 </section>
 
+<section class="view" id="v-ta">
+  <h1>Struttura</h1>
+  <p class="lede">Struttura di mercato su tutti i timeframe: massimi e minimi (HH, HL, LH, LL), rotture BOS e CHoCH in chiusura, Fibonacci dell'ultimo impulso, livelli chiave e scenari.</p>
+  <div class="ta-bar">
+    <div class="chips" id="taChips" role="group" aria-label="Coin"></div>
+    <input class="inp" id="taCoin" type="text" placeholder="Altra coin" autocapitalize="characters" autocorrect="off" spellcheck="false" enterkeyhint="go" aria-label="Analizza un'altra coin">
+  </div>
+  <div id="taOut"></div>
+</section>
+
 <footer>Dati in diretta dall'API pubblica di Hyperliquid. Sola lettura, nessun ordine.<br>Il backtest non è una previsione. Non è consulenza finanziaria.</footer>
 </main>
 
@@ -298,6 +343,12 @@ footer{font-size:12px;color:var(--t3);text-align:center;margin-top:32px;line-hei
   <button class="btn" id="saveSet">Fatto</button>
 </div>
 
+<script type="module">
+// motore di analisi condiviso con il Worker (stesso file, stessi risultati)
+import * as A from "./analisi.js";
+window.Analisi = A;
+dispatchEvent(new Event("analisi-pronta"));
+</script>
 <script>
 "use strict";
 /* ═════════ CONFIG ═════════ */
@@ -617,6 +668,7 @@ function render() {
   if (!d) return;
   renderNow(d); renderOrders(d); renderTrades(d);
   if (S.view === "bt") runBacktest();
+  if (S.view === "ta") runTA(true);
 }
 
 function spark(h) {
@@ -845,15 +897,198 @@ function drawChart(el, mine, theirs) {
   svg.addEventListener("pointerleave", () => { tip.style.opacity = 0; cx.setAttribute("opacity", 0); });
 }
 
+/* ═════════ STRUTTURA: analisi tecnica multi-timeframe ═════════
+   Il calcolo sta in analisi.js (lo stesso file usato dal Worker per Telegram). Qui solo dati e disegno. */
+const analisiPronta = new Promise((res) => {
+  if (window.Analisi) res(window.Analisi);
+  else addEventListener("analisi-pronta", () => res(window.Analisi), { once: true });
+});
+S.ta = { coin: store.get("wd.ta.coin", "BTC"), tf: store.get("wd.ta.tf", "1d"), grado: "swing", cache: {}, seq: 0 };
+
+const taDir = (s) => (s > 0 ? "up" : s < 0 ? "dn" : "");
+const taTag = (fase) => {
+  const k = fase.k;
+  const cls = k === "rialzista" || k === "rimbalzo" || k === "laterale+" ? "hi" : k === "ribassista" || k === "correzione" || k === "laterale-" ? "dn" : "";
+  return `<span class="tag ${cls}">${esc(fase.nome)}</span>`;
+};
+const fibF = (f) => nf(f, f === 0 || f === 1 ? 0 : f === 0.5 ? 1 : 3).replace(/0+$/, "").replace(/,$/, "");
+
+function taCoins() {
+  const d = D();
+  const pos = d ? d.pos.map((p) => (dexOf(p.coin) ? p.coin : bare(p.coin))) : [];
+  const out = [...new Set([...(window.Analisi?.WATCHLIST || ["BTC", "ETH", "SOL", "HYPE", "LINK"]), ...pos])];
+  if (!out.includes(S.ta.coin)) out.push(S.ta.coin);
+  return out;
+}
+
+function renderTAChips() {
+  $("#taChips").innerHTML = taCoins().map((c) => `<button class="chip" data-c="${esc(c)}" aria-pressed="${c === S.ta.coin}">${esc(bare(c))}${dexOf(c) ? ` <small class="mut">${esc(dexOf(c))}</small>` : ""}</button>`).join("");
+}
+$("#taChips").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b || b.dataset.c === S.ta.coin) return;
+  S.ta.coin = b.dataset.c; store.set("wd.ta.coin", S.ta.coin); runTA();
+});
+$("#taCoin").addEventListener("keydown", async (e) => {
+  if (e.key !== "Enter") return;
+  const A = await analisiPronta, c = A.normCoin(e.target.value);
+  if (!c) return;
+  e.target.value = ""; e.target.blur();
+  S.ta.coin = c; store.set("wd.ta.coin", c); runTA();
+});
+
+async function taDati(coin, soft) {
+  const A = await analisiPronta;
+  const hit = S.ta.cache[coin];
+  if (hit && (soft ? Date.now() - hit.t < 60e3 : Date.now() - hit.t < 15e3)) return hit.r;
+  const now = Date.now(), per = {};
+  await Promise.all(A.richieste(coin, now).map(async (q) => { per[q.tf] = await post(q.body).catch(() => []); }));
+  const r = A.analizza(coin, per, now);
+  S.ta.cache[coin] = { t: now, r };
+  return r;
+}
+
+async function runTA(soft = false) {
+  renderTAChips();
+  const seq = ++S.ta.seq, coin = S.ta.coin;
+  if (!soft || !S.ta.cache[coin]) $("#taOut").innerHTML = `<div class="card"><div class="sk" style="width:55%"></div><div class="sk" style="height:200px;margin-top:14px"></div></div>`;
+  let r;
+  try { r = await taDati(coin, soft); }
+  catch (err) { if (seq === S.ta.seq) $("#taOut").innerHTML = `<div class="card"><div class="empty"><b>Analisi non riuscita</b>${esc(err.message)}</div></div>`; return; }
+  if (seq !== S.ta.seq) return;
+  if (!r.ok) { $("#taOut").innerHTML = `<div class="card"><div class="empty"><b>${esc(coin)}</b>${esc(r.errore)}. Per i mercati HIP-3 scrivi dex:coin, es. xyz:XYZ100.</div></div>`; return; }
+  renderTA(r);
+}
+
+function renderTA(r) {
+  const A = window.Analisi;
+  const okTf = r.timeframe.filter((x) => x.ok);
+  if (!okTf.some((x) => x.tf === S.ta.tf)) S.ta.tf = okTf[okTf.length - 1].tf;
+  const tfSel = okTf.find((x) => x.tf === S.ta.tf);
+  const pos = Math.min(Math.max((r.punteggio + 1) / 2, 0), 1) * 100;
+  const lvRow = (l, kind) => {
+    const dist = (l.p - r.prezzo) / r.prezzo, f = Math.min(l.forza / 40, 1) * 100;
+    return `<div class="lvl"><div class="p">${px(l.p)}${l.confluenza ? ' <span class="tag hi" title="Confluenza">★</span>' : ""}</div>
+      <div class="f"><i style="width:${f.toFixed(0)}%;background:${kind === "r" ? "var(--dn)" : "var(--a)"}"></i></div>
+      <div class="d">${sPct(dist)}</div>
+      <small>${esc(l.fonti.slice(0, 6).join(" · "))}${l.a - l.da > r.prezzo * 0.002 ? ` · zona ${px(l.da)}–${px(l.a)}` : ""}</small></div>`;
+  };
+  const sc = r.scenari.lista.map((s) => {
+    const righe = [];
+    if (s.trigger) righe.push(`Trigger: chiusura ${s.tfTrigger} ${s.k === "rialzista" ? "sopra" : "sotto"} ${px(s.trigger)}`);
+    if (s.conferma) righe.push(`Conferma: chiusura ${s.tfConferma} oltre ${px(s.conferma)}`);
+    if (s.invalidazione) righe.push(`Struttura ${s.tfConferma} rotta ${s.k === "rialzista" ? "sopra" : "sotto"} ${px(s.invalidazione)}`);
+    if (s.obiettivi?.length) righe.push(`Obiettivi: ${s.obiettivi.map(px).join(" → ")}`);
+    return `<div class="callout ${s.k === "rialzista" ? "" : "risk"}"><b>${esc(s.nome)}</b><div>${righe.join("<br>") || "Nessun livello utile nei dati disponibili"}</div></div>`;
+  }).join("");
+
+  $("#taOut").innerHTML = `
+    <div class="card">
+      <div class="between"><span class="sub" style="margin:0">${esc(r.coin)} · ${px(r.prezzo)}</span><span class="tag ${r.punteggio > 0.15 ? "hi" : r.punteggio < -0.15 ? "dn" : ""}">bias ${esc(r.bias)}</span></div>
+      <div class="verdict" style="margin-top:8px">${esc(r.quadro.nome)}</div>
+      <div class="score" aria-label="Punteggio aggregato ${nf(r.punteggio, 2)}"><i style="left:${pos.toFixed(1)}%"></i></div>
+      <div class="score-l"><span>ribassista</span><span class="m">${r.punteggio >= 0 ? "+" : ""}${nf(r.punteggio, 2)}</span><span>rialzista</span></div>
+      ${r.note.length ? `<div class="notes">${r.note.map((n) => `<div>${esc(n)}</div>`).join("")}</div>` : ""}
+    </div>
+
+    <div class="sec"><span>Timeframe</span><span class="m">swing / interna · Fib dell'impulso swing</span></div>
+    <div class="card flush" id="taTf">${okTf.map((x) => {
+      const rot = x.swing.ultimaRottura, seq = x[S.ta.grado].sequenza.slice(-5);
+      return `<div class="prow tfrow" data-tf="${x.tf}" aria-current="${x.tf === S.ta.tf}" role="button" tabindex="0">
+        <div class="c"><b>${x.tf}</b> ${taTag(x.fase)}</div>
+        <div class="v">${x.fib ? "Fib " + nf(x.fib.r, 2) : "—"}</div>
+        <div class="d"><span class="seq">${seq.map((p) => `<span class="${p.lab === "HH" || p.lab === "HL" ? "up" : p.lab === "LH" || p.lab === "LL" ? "dn" : ""}">${p.lab}</span>`).join("")}</span></div>
+        <div class="d r">${rot ? `${rot.tipo} ${rot.dir > 0 ? "↑" : "↓"} ${px(rot.livello)}` : ""}${x.rsi != null ? ` · RSI ${nf(x.rsi)}` : ""}</div>
+      </div>`; }).join("")}</div>
+
+    <div class="sec"><span>Grafico ${esc(tfSel.nome.toLowerCase())}</span><span class="m">${tfSel.fib ? `impulso ${px(tfSel.fib.da)} → ${px(tfSel.fib.a)}` : ""}</span></div>
+    <div class="card">
+      <div class="segm" id="taTfSeg">${okTf.map((x) => `<button data-tf="${x.tf}" aria-pressed="${x.tf === S.ta.tf}">${x.tf}</button>`).join("")}</div>
+      <div class="segm" id="taGrado" style="margin-top:8px"><button data-g="swing" aria-pressed="${S.ta.grado === "swing"}">Swing</button><button data-g="interna" aria-pressed="${S.ta.grado === "interna"}">Interna</button></div>
+      <div class="ta-chart" id="taChart"></div>
+      <div class="legend"><span><i style="background:var(--a)"></i>HH · HL</span><span><i style="background:var(--dn)"></i>LH · LL</span><span><i style="background:var(--t3)"></i>Fibonacci${S.ta.grado === "swing" ? " swing" : " interno"}</span></div>
+    </div>
+
+    <div class="cols" style="margin-top:0">
+      <div><div class="sec"><span>Resistenze</span><span class="m">★ confluenza</span></div>
+        <div class="card flush">${r.resistenze.length ? r.resistenze.slice().reverse().map((l) => lvRow(l, "r")).join("") : `<div class="empty">Nessuna resistenza forte nei dati</div>`}</div></div>
+      <div><div class="sec"><span>Supporti</span><span class="m">distanza dal prezzo</span></div>
+        <div class="card flush">${r.alPrezzo.map((l) => lvRow(l, "s").replace('class="lvl"', 'class="lvl now"')).join("")}${r.supporti.length ? r.supporti.map((l) => lvRow(l, "s")).join("") : `<div class="empty">Nessun supporto forte nei dati</div>`}</div></div>
+    </div>
+
+    <div class="sec"><span>Scenari</span><span class="m">invalidazione ${px(r.scenari.invalidazione)}</span></div>
+    <div class="scen">${sc}</div>
+
+    <div class="card" style="margin-top:12px"><div class="sub" style="margin:0;line-height:1.55">
+      <b style="color:var(--t1)">Come funziona.</b> Per ogni timeframe si cercano massimi e minimi confermati da candele su entrambi i lati: 10 per la struttura swing, 3 per quella interna (6 e 2 sul settimanale).
+      Una chiusura oltre l'ultimo massimo o minimo è un BOS se segue il trend, un CHoCH se lo inverte. Il Fibonacci va dal minimo (o massimo) da cui è partita l'ultima rottura swing fino all'estremo successivo: 0,75 vuol dire che il prezzo ha restituito tre quarti dell'impulso.
+      Il quadro pesa i timeframe (settimanale e giornaliero 3, 4 ore 2, 1 ora 1, 15 minuti 0,5). Livelli: swing e Fibonacci vicini si fondono in zone, ★ quando confermati da più fonti. Lettura tecnica, non consulenza.</div></div>`;
+
+  drawTA($("#taChart"), tfSel, S.ta.grado, r.prezzo);
+  const pickTf = (tf) => { S.ta.tf = tf; store.set("wd.ta.tf", tf); renderTA(r); };
+  $("#taTf").addEventListener("click", (e) => { const row = e.target.closest(".tfrow"); if (row) pickTf(row.dataset.tf); });
+  $("#taTf").addEventListener("keydown", (e) => { const row = e.target.closest(".tfrow"); if (row && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); pickTf(row.dataset.tf); } });
+  $("#taTfSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b) pickTf(b.dataset.tf); });
+  $("#taGrado").addEventListener("click", (e) => { const b = e.target.closest("button"); if (b && b.dataset.g !== S.ta.grado) { S.ta.grado = b.dataset.g; renderTA(r); } });
+}
+
+// candele con etichette degli swing e livelli di Fibonacci, disegnate alla larghezza reale del contenitore
+function drawTA(el, x, grado, prezzo) {
+  const cs = x.candele.slice(-(el.clientWidth < 500 ? 70 : 120));
+  if (!cs.length) { el.innerHTML = ""; return; }
+  const W = Math.max(280, el.clientWidth), H = 280, padR = 74, padT = 18, padB = 22, cw = (W - padR) / cs.length;
+  const t0 = cs[0].t, fib = grado === "swing" ? x.fib : x.fibInt;
+  let lo = Math.min(...cs.map((c) => c.l)), hi = Math.max(...cs.map((c) => c.h));
+  if (fib && fib.tDa >= t0) { lo = Math.min(lo, fib.da, fib.a); hi = Math.max(hi, fib.da, fib.a); }
+  const pad = (hi - lo) * 0.06; lo -= pad; hi += pad;
+  const y = (v) => padT + (1 - (v - lo) / (hi - lo || 1)) * (H - padT - padB);
+  const xi = (i) => i * cw + cw / 2;
+  const idx = new Map(cs.map((c, i) => [c.t, i]));
+  const body = Math.max(1, cw * 0.62);
+  let g = "";
+  if (fib) {
+    // etichette a destra senza sovrapposizioni: prima il prezzo, poi 0 e 1, poi i livelli chiave
+    const prio = (f) => (f === 0 || f === 1 ? 0 : [0.618, 0.75, 0.786].includes(f) ? 1 : f === 0.5 ? 2 : 3);
+    const presi = [y(prezzo)], vis = fib.livelli.filter((l) => l.p >= lo && l.p <= hi);
+    const conEtichetta = new Set(vis.slice().sort((a, b) => prio(a.f) - prio(b.f)).filter((l) => {
+      const yy = y(l.p); if (presi.some((q) => Math.abs(q - yy) < 13)) return false; presi.push(yy); return true; }));
+    for (const l of vis) {
+      const key = [0.618, 0.75, 0.786].includes(l.f);
+      g += `<line x1="0" x2="${W - padR + 4}" y1="${y(l.p).toFixed(1)}" y2="${y(l.p).toFixed(1)}" stroke="${key ? "var(--a)" : "var(--t4)"}" stroke-opacity="${key ? 0.55 : 1}" stroke-dasharray="${l.f === 0 || l.f === 1 ? "0" : "3 4"}" stroke-width="1"/>`;
+      if (conEtichetta.has(l)) g += `<text x="${W - padR + 8}" y="${(y(l.p) + 3.5).toFixed(1)}" fill="${key ? "var(--a-ink)" : "var(--t3)"}">${fibF(l.f)} ${px(l.p)}</text>`;
+    }
+  }
+  cs.forEach((c, i) => {
+    const up = c.c >= c.o, col = up ? "var(--a)" : "var(--dn)";
+    const yo = y(c.o), yc = y(c.c);
+    g += `<line x1="${xi(i).toFixed(1)}" x2="${xi(i).toFixed(1)}" y1="${y(c.h).toFixed(1)}" y2="${y(c.l).toFixed(1)}" stroke="${col}" stroke-width="1"/>
+      <rect x="${(xi(i) - body / 2).toFixed(1)}" y="${Math.min(yo, yc).toFixed(1)}" width="${body.toFixed(1)}" height="${Math.max(1, Math.abs(yc - yo)).toFixed(1)}" fill="${col}" rx="${body > 4 ? 1 : 0}"/>`;
+  });
+  for (const p of x[grado].sequenza) {
+    const i = idx.get(p.t); if (i == null) continue;
+    const top = p.tipo === "H", good = p.lab === "HH" || p.lab === "HL", bad = p.lab === "LH" || p.lab === "LL";
+    const yy = top ? y(p.p) - 7 : y(p.p) + 15;
+    g += `<text x="${xi(i).toFixed(1)}" y="${yy.toFixed(1)}" text-anchor="middle" font-weight="700" fill="${good ? "var(--a-ink)" : bad ? "var(--dn-ink)" : "var(--t2)"}">${p.lab}</text>`;
+  }
+  const yp = y(prezzo);
+  g += `<line x1="0" x2="${W - padR + 4}" y1="${yp.toFixed(1)}" y2="${yp.toFixed(1)}" stroke="var(--t1)" stroke-width="1" stroke-opacity=".7"/>
+    <rect x="${W - padR + 4}" y="${(yp - 9).toFixed(1)}" width="${padR - 4}" height="18" rx="5" fill="var(--t1)"/>
+    <text x="${W - padR + 8}" y="${(yp + 3.5).toFixed(1)}" fill="var(--bg)" font-weight="700">${px(prezzo)}</text>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="Grafico ${esc(x.tf)} con swing e Fibonacci">${g}</svg>
+    <div class="between m" style="font-size:11px;color:var(--t3);margin-top:2px"><span>${dTime(cs[0].t)}</span><span>${dTime(cs[cs.length - 1].t)}</span></div>`;
+}
+let taResize = 0;
+addEventListener("resize", () => { clearTimeout(taResize); taResize = setTimeout(() => { if (S.view === "ta" && S.ta.cache[S.ta.coin]) renderTA(S.ta.cache[S.ta.coin].r); }, 150); });
+
 /* ═════════ NAVIGAZIONE ═════════ */
 function show(v, push = true) {
-  if (!["ora", "ordini", "trade", "bt"].includes(v)) v = "ora";
+  if (!["ora", "ordini", "trade", "bt", "ta"].includes(v)) v = "ora";
   S.view = v;
   $$(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.v === v)));
   $$(".view").forEach((s) => s.classList.toggle("on", s.id === "v-" + v));
   if (push) history.replaceState(null, "", "#" + v);
   window.scrollTo(0, 0);
   if (v === "bt") { $("#btOut").innerHTML = ""; runBacktest(); }
+  if (v === "ta") runTA();
 }
 $$(".tab").forEach((t) => t.addEventListener("click", () => show(t.dataset.v)));
 addEventListener("hashchange", () => show(location.hash.slice(1), false));

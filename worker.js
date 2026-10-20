@@ -6,6 +6,8 @@
  * Il Worker invia solo alert: l'esecuzione degli ordini resta manuale.
  */
 
+import { analizza, richieste, testoTelegram, normCoin, WATCHLIST } from "./dashboard/analisi.js";
+
 /* ─────────── configurazione ─────────── */
 
 const WALLETS = [
@@ -685,6 +687,19 @@ async function reportSalute(env) {
   return { ok: true, wallet: righe.length };
 }
 
+/* ─────────── analisi tecnica multi-timeframe ─────────── */
+
+// 5 subrequest per coin (una per timeframe): con la watchlist intera si resta sotto le 50 del piano free
+async function analisiCoin(coin) {
+  const now = Date.now(), per = {};
+  await Promise.all(richieste(coin, now).map(async (q) => {
+    try { per[q.tf] = await hl(q.body); } catch { per[q.tf] = []; }
+  }));
+  return analizza(coin, per, now);
+}
+
+const senzaCandele = (r) => (r.ok ? { ...r, timeframe: r.timeframe.map(({ candele, ...x }) => x) } : r);
+
 /* ─────────── API per la dashboard ─────────── */
 
 async function stato(env) {
@@ -740,6 +755,23 @@ export default {
     if (url.pathname === "/health") return json({ ok: true, v: 13, wallet: WALLETS.map((w) => `${w.g} ${w.n}`), ora: new Date().toISOString() });
     if (url.pathname === "/state") return json(await stato(env));
 
+    // /analisi?coin=LINK  ·  /analisi?coin=BTC,ETH  ·  /analisi?watchlist=1
+    // con &tg=1&key=… invia anche su Telegram; con &candele=1 include le candele per i grafici
+    if (url.pathname === "/analisi") {
+      SUB = 0;
+      const lista = url.searchParams.has("watchlist") ? WATCHLIST
+        : (url.searchParams.get("coin") || "BTC").split(",").map(normCoin).filter(Boolean).slice(0, 6);
+      const tg = url.searchParams.get("tg") === "1";
+      if (tg && (!env.ADMIN_KEY || url.searchParams.get("key") !== env.ADMIN_KEY)) return json({ errore: "chiave mancante o errata" }, 401);
+      const out = [];
+      for (const c of lista) {
+        const r = await analisiCoin(c);
+        if (tg) await tgSend(env, testoTelegram(r));
+        out.push(url.searchParams.get("candele") === "1" ? r : senzaCandele(r));
+      }
+      return json(out.length === 1 ? out[0] : out);
+    }
+
     // protette da chiave: /check?key=…  /decay?key=…  /test?key=…
     if (["/check", "/decay", "/test"].includes(url.pathname)) {
       if (!env.ADMIN_KEY || url.searchParams.get("key") !== env.ADMIN_KEY) return json({ errore: "chiave mancante o errata" }, 401);
@@ -751,6 +783,6 @@ export default {
       return json(await controlla(env));
     }
 
-    return json({ servizio: "Whale Desk v13", rotte: ["/health", "/state", "/check?key=…", "/decay?key=…", "/test?key=…"] });
+    return json({ servizio: "Whale Desk v13", rotte: ["/health", "/state", "/analisi?coin=…", "/analisi?watchlist=1", "/check?key=…", "/decay?key=…", "/test?key=…"] });
   },
 };
