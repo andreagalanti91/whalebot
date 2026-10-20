@@ -537,7 +537,7 @@ async function controlla(env) {
     try {
       const r = await hl({ type: "userFillsByTime", user: w.a, startTime: (st.cur[w.a] || now - 60e3) + 1, aggregateByTime: true });
       fills[w.a] = r.sort((x, y) => x.time - y.time);
-    } catch { fills[w.a] = null; }
+    } catch (err) { fills[w.a] = null; console.log("fills", w.n, String(err)); }
   }));
 
   // 2. quali DEX interrogare: principale, quelli con posizioni, quelli toccati dai fill, più una rotazione HIP-3
@@ -561,7 +561,7 @@ async function controlla(env) {
       st.dex[a] ||= {};
       if (!d || s.eq || Object.keys(s.pos).length) st.dex[a][d] = { ...s, t: now };
       else delete st.dex[a][d];
-    } catch {}
+    } catch (err) { console.log("state", byAddr[a].n, d || "main", String(err)); }
   }));
 
   // 3. eventi aggregati
