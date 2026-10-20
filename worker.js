@@ -130,6 +130,7 @@ const empty = () => ({
   copy: { pos: {}, closed: [], realized: 0 },
   eqh: {},       // addr → [[t, equity]] campioni orari, ultime ~48h
   eqAlert: {},   // addr → time ultimo alert di calo equity
+  spot: {},      // addr → stablecoin in spot
   dexList: null, // { t, list } da perpDexs
   readyAt: 0,    // prima di questo istante consenso/conflitto si registrano in silenzio
 });
@@ -137,11 +138,13 @@ const empty = () => ({
 // Il salvataggio ignora i campi che cambiano a ogni minuto (equity, nozionali, timestamp):
 // si scrive su KV solo per eventi, segnali e campioni orari, più un rinfresco ogni 10 minuti.
 // Così si resta sotto le 1.000 scritture al giorno del piano free.
-const VOLATILE = new Set(["eq", "ntl", "upnl", "fund", "t", "savedAt"]);
+const VOLATILE = new Set(["eq", "ntl", "upnl", "fund", "t", "savedAt", "spot"]);
 const sigOf = (o) => JSON.stringify(o, (k, v) => (VOLATILE.has(k) ? undefined : v));
 const SAVE_EVERY = 10 * 60e3;
 
-const eqTot = (st, a) => Object.values(st.dex[a] || {}).reduce((s, d) => s + (d.eq || 0), 0);
+// equity = margine perp su tutti i DEX + stablecoin in spot (il conto unificato tiene lì il collaterale)
+const eqTot = (st, a) => Object.values(st.dex[a] || {}).reduce((s, d) => s + (d.eq || 0), 0) + (st.spot?.[a] || 0);
+const STABLES = new Set(["USDC", "USDT0", "USDH", "USDE", "USDT"]);
 
 // posizione di un wallet su una coin "nuda" (preferisce il DEX principale)
 function findPos(st, a, bare) {
@@ -555,6 +558,13 @@ async function controlla(env) {
   }
   const jobs = [];
   for (const [a, set] of Object.entries(want)) for (const d of set) jobs.push([a, d]);
+  st.spot ||= {};
+  await Promise.all(WALLETS.map(async (w) => {
+    try {
+      const s = await hl({ type: "spotClearinghouseState", user: w.a });
+      st.spot[w.a] = (s.balances || []).filter((b) => STABLES.has(b.coin)).reduce((x, b) => x + +b.total, 0);
+    } catch (err) { console.log("spot", w.n, String(err)); }
+  }));
   await Promise.all(jobs.map(async ([a, d]) => {
     try {
       const s = await fetchState(a, d);

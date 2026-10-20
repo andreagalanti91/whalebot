@@ -7,444 +7,346 @@
 <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
 <meta name="color-scheme" content="light dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Whale Desk</title>
 <style>
 /* ═════════ TOKEN ═════════
-   Ambra #FFB020 è l'accento; il rosso desaturato #FF6B74 compare solo sulle perdite.
-   In chiaro i due colori, usati come testo, scendono di tono (-ink) per restare leggibili su bianco. */
+   Ambra = accento e guadagni. Rosso desaturato = solo perdite. In chiaro scendono di tono per leggersi su bianco. */
 :root{
-  --a:#FFB020; --a-soft:rgba(255,176,32,.16); --a-line:rgba(255,176,32,.42);
+  --a:#FFB020; --a-soft:rgba(255,176,32,.16);
   --dn:#FF6B74; --dn-soft:rgba(255,107,116,.14);
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,"Segoe UI",Roboto,sans-serif;
   --mono:ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
   --ease:cubic-bezier(.32,.72,0,1);
   --st:env(safe-area-inset-top,0px); --sb:env(safe-area-inset-bottom,0px);
   --sl:env(safe-area-inset-left,0px); --sr:env(safe-area-inset-right,0px);
-  --tab:56px; --gut:16px; --r:20px;
+  --tab:56px; --gut:16px; --r:18px;
   color-scheme:light;
   --bg:#F2F2F7; --card:#FFFFFF; --card2:#F6F6F9;
-  --t1:#0B0B0F; --t2:rgba(60,60,67,.74); --t3:rgba(60,60,67,.5); --t4:rgba(60,60,67,.28);
+  --t1:#0B0B0F; --t2:rgba(60,60,67,.74); --t3:rgba(60,60,67,.5); --t4:rgba(60,60,67,.26);
   --sep:rgba(60,60,67,.13); --fill:rgba(118,118,128,.12); --fill2:rgba(118,118,128,.2);
-  --bar:rgba(249,249,251,.78); --bar-line:rgba(0,0,0,.08);
+  --bar:rgba(242,242,247,.8); --bar-line:rgba(0,0,0,.08);
   --a-ink:#A86A00; --dn-ink:#D7404E;
-  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px -12px rgba(0,0,0,.12);
-  --scrim:rgba(0,0,0,.28);
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 8px 24px -14px rgba(0,0,0,.14);
+  --scrim:rgba(0,0,0,.3);
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     color-scheme:dark;
-    --bg:#000000; --card:#121215; --card2:#1B1B20;
-    --t1:rgba(255,255,255,.96); --t2:rgba(235,235,245,.64); --t3:rgba(235,235,245,.42); --t4:rgba(235,235,245,.22);
+    --bg:#000; --card:#121215; --card2:#1B1B20;
+    --t1:rgba(255,255,255,.96); --t2:rgba(235,235,245,.64); --t3:rgba(235,235,245,.42); --t4:rgba(235,235,245,.2);
     --sep:rgba(255,255,255,.09); --fill:rgba(118,118,128,.24); --fill2:rgba(118,118,128,.34);
-    --bar:rgba(12,12,14,.72); --bar-line:rgba(255,255,255,.08);
+    --bar:rgba(0,0,0,.72); --bar-line:rgba(255,255,255,.08);
     --a-ink:#FFB020; --dn-ink:#FF6B74;
-    --shadow:0 0 0 .5px rgba(255,255,255,.07) inset;
-    --scrim:rgba(0,0,0,.55);
+    --shadow:0 0 0 .5px rgba(255,255,255,.07) inset; --scrim:rgba(0,0,0,.55);
   }
 }
 :root[data-theme="dark"]{
   color-scheme:dark;
-  --bg:#000000; --card:#121215; --card2:#1B1B20;
-  --t1:rgba(255,255,255,.96); --t2:rgba(235,235,245,.64); --t3:rgba(235,235,245,.42); --t4:rgba(235,235,245,.22);
+  --bg:#000; --card:#121215; --card2:#1B1B20;
+  --t1:rgba(255,255,255,.96); --t2:rgba(235,235,245,.64); --t3:rgba(235,235,245,.42); --t4:rgba(235,235,245,.2);
   --sep:rgba(255,255,255,.09); --fill:rgba(118,118,128,.24); --fill2:rgba(118,118,128,.34);
-  --bar:rgba(12,12,14,.72); --bar-line:rgba(255,255,255,.08);
+  --bar:rgba(0,0,0,.72); --bar-line:rgba(255,255,255,.08);
   --a-ink:#FFB020; --dn-ink:#FF6B74;
-  --shadow:0 0 0 .5px rgba(255,255,255,.07) inset;
-  --scrim:rgba(0,0,0,.55);
+  --shadow:0 0 0 .5px rgba(255,255,255,.07) inset; --scrim:rgba(0,0,0,.55);
 }
 @media (min-width:768px){:root{--gut:24px}}
 
-/* ═════════ BASE (mobile-native) ═════════ */
+/* ═════════ BASE ═════════ */
 *{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;overscroll-behavior:none;background:var(--bg);
-  transition:background-color .3s ease}
-body{background:var(--bg);color:var(--t1);font:400 15px/1.45 var(--font);letter-spacing:-.008em;
-  -webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden}
-button,a,[role="button"],[role="tab"],summary{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%;overscroll-behavior:none;background:var(--bg)}
+body{background:var(--bg);color:var(--t1);font:400 15px/1.45 var(--font);letter-spacing:-.008em;-webkit-font-smoothing:antialiased;min-height:100dvh;overflow-x:hidden}
+button,a,[role="tab"],summary,th{touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
-input,select,textarea{font:inherit;font-size:16px;color:var(--t1)}
+input,select{font:inherit;font-size:16px;color:var(--t1)}
 .m{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
 .pos{color:var(--a-ink)} .neg{color:var(--dn-ink)} .mut{color:var(--t3)}
-.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
-/* ═════════ BARRA SUPERIORE (materiale traslucido) ═════════ */
-.top{position:fixed;top:0;left:0;right:0;z-index:50;padding:calc(var(--st) + 8px) calc(var(--gut) + var(--sr)) 8px calc(var(--gut) + var(--sl));
-  background:var(--bar);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);
-  border-bottom:.5px solid transparent;transition:border-color .2s}
-.top.scrolled{border-bottom-color:var(--bar-line)}
-.top-in{max-width:1120px;margin:0 auto;display:flex;align-items:center;gap:10px;height:36px}
-.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;letter-spacing:-.03em;flex:none}
+/* ═════════ TESTATA: brand + scelta wallet ═════════ */
+.top{position:fixed;top:0;left:0;right:0;z-index:50;padding:calc(var(--st) + 8px) calc(var(--gut) + var(--sr)) 10px calc(var(--gut) + var(--sl));
+  background:var(--bar);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border-bottom:.5px solid var(--bar-line)}
+.top-in{max-width:1120px;margin:0 auto}
+.row1{display:flex;align-items:center;gap:10px;height:34px;margin-bottom:8px}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;letter-spacing:-.03em;flex:1}
 .brand i{width:8px;height:8px;border-radius:50%;background:var(--a);box-shadow:0 0 0 3px var(--a-soft)}
 .brand i.off{background:var(--t4);box-shadow:none}
-.mini{font-size:15px;font-weight:600;letter-spacing:-.02em;opacity:0;transform:translateY(4px);transition:opacity .2s,transform .25s var(--ease);flex:1;min-width:0;text-align:center}
-.top.scrolled .mini{opacity:1;transform:none}
-.status{display:flex;align-items:center;gap:6px;height:30px;padding:0 10px;border-radius:15px;background:var(--fill);font-size:12px;color:var(--t2);flex:none;
-  transition:transform .12s var(--ease)}
-.status:active{transform:scale(.95)}
-.status .m{font-size:11.5px}
-.icon-btn{width:34px;height:34px;border-radius:17px;display:grid;place-items:center;background:var(--fill);color:var(--t2);flex:none;transition:transform .12s var(--ease),background .15s}
-.icon-btn:active{transform:scale(.9);background:var(--fill2)}
+.ago{font-size:12px;color:var(--t3)}
+.icon-btn{width:34px;height:34px;border-radius:17px;display:grid;place-items:center;background:var(--fill);color:var(--t2);flex:none;transition:transform .12s var(--ease)}
+.icon-btn:active{transform:scale(.9)}
 .icon-btn svg{width:18px;height:18px}
+.wallets{display:flex;padding:3px;gap:3px;border-radius:12px;background:var(--fill)}
+.wallets button{flex:1 1 0;min-width:0;height:44px;border-radius:9px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;color:var(--t2);
+  transition:background .2s,color .2s,transform .12s var(--ease)}
+.wallets button:active{transform:scale(.97)}
+.wallets b{font-size:13.5px;font-weight:600;letter-spacing:-.02em;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 4px}
+.wallets small{font-size:10.5px;font-family:var(--mono);color:var(--t3)}
+.wallets button[aria-selected="true"]{background:var(--card);color:var(--t1);box-shadow:0 1px 3px rgba(0,0,0,.14)}
 
-/* ═════════ TAB BAR ═════════ */
+/* ═════════ TAB DI SEZIONE ═════════ */
 .tabs{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:0 calc(6px + var(--sr)) var(--sb) calc(6px + var(--sl));
   background:var(--bar);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border-top:.5px solid var(--bar-line)}
-.tabs-in{display:flex;max-width:560px;margin:0 auto;height:var(--tab)}
-.tab{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--t3);position:relative;
-  transition:color .2s var(--ease)}
+.tabs-in{display:flex;max-width:520px;margin:0 auto;height:var(--tab)}
+.tab{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:var(--t3);position:relative;transition:color .2s}
 .tab svg{width:22px;height:22px;transition:transform .15s var(--ease)}
 .tab:active svg{transform:scale(.88)}
-.tab span{font-size:10px;font-weight:600;letter-spacing:0}
+.tab span{font-size:10px;font-weight:600}
 .tab[aria-selected="true"]{color:var(--a-ink)}
-.tab .badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:var(--a);color:#000;
-  font-size:10.5px;font-weight:700;line-height:17px;text-align:center;display:none}
+.tab .badge{position:absolute;top:6px;left:calc(50% + 6px);min-width:17px;height:17px;padding:0 5px;border-radius:9px;background:var(--a);color:#000;font-size:10.5px;font-weight:700;line-height:17px;text-align:center;display:none}
 .tab .badge.on{display:block}
 @media (min-width:768px){
-  .tabs{top:calc(var(--st) + 52px);bottom:auto;background:transparent;border:0;-webkit-backdrop-filter:none;backdrop-filter:none;pointer-events:none;padding:0 var(--gut)}
-  .tabs-in{pointer-events:auto;height:auto;max-width:520px;padding:3px;border-radius:11px;background:var(--fill);gap:2px;
-    -webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%)}
+  .tabs{top:calc(var(--st) + 104px);bottom:auto;border-top:0;border-bottom:.5px solid var(--bar-line);padding:0 calc(var(--gut) + var(--sr)) 10px calc(var(--gut) + var(--sl))}
+  .top{border-bottom:0}
+  .tabs-in{height:auto;max-width:1120px;padding:3px;border-radius:11px;background:var(--fill);gap:3px}
   .tab{flex-direction:row;height:32px;border-radius:8px;gap:6px;color:var(--t2)}
-  .tab svg{width:15px;height:15px}
-  .tab span{font-size:13px}
+  .tab svg{width:15px;height:15px} .tab span{font-size:13px}
   .tab[aria-selected="true"]{background:var(--card);color:var(--t1);box-shadow:0 1px 3px rgba(0,0,0,.12)}
-  .tab .badge{position:static;margin-left:2px}
+  .tab .badge{position:static}
 }
 
 /* ═════════ LAYOUT ═════════ */
-main{max-width:1120px;margin:0 auto;padding:calc(var(--st) + 60px) calc(var(--gut) + var(--sr)) calc(var(--tab) + var(--sb) + 28px) calc(var(--gut) + var(--sl))}
-@media (min-width:768px){main{padding-top:calc(var(--st) + 108px);padding-bottom:48px}}
-.view{display:none}
-.view.on{display:block}
-@media (prefers-reduced-motion:no-preference){.view.on{animation:enter .32s var(--ease)}}
+main{max-width:1120px;margin:0 auto;padding:calc(var(--st) + 120px) calc(var(--gut) + var(--sr)) calc(var(--tab) + var(--sb) + 28px) calc(var(--gut) + var(--sl))}
+@media (min-width:768px){main{padding-top:calc(var(--st) + 160px);padding-bottom:48px}}
+.view{display:none}.view.on{display:block}
+@media (prefers-reduced-motion:no-preference){.view.on{animation:enter .3s var(--ease)}}
 @keyframes enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.title{font-size:34px;line-height:1.08;font-weight:700;letter-spacing:-.025em;margin:6px 2px 4px}
-.lede{font-size:15px;color:var(--t2);margin:0 2px 18px;max-width:62ch}
+h1{font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-.025em;margin:4px 2px 4px}
+.lede{font-size:14.5px;color:var(--t2);margin:0 2px 16px;max-width:68ch;overflow-wrap:anywhere}
 .stack{display:flex;flex-direction:column;gap:12px}
-.grid2{display:grid;gap:12px}
-@media (min-width:900px){.grid2{grid-template-columns:1fr 1fr;align-items:start}}
+.cols{display:grid;gap:12px}
+@media (min-width:900px){.cols{grid-template-columns:1.1fr .9fr;align-items:start}}
 .sec{font-size:13px;font-weight:600;color:var(--t2);margin:22px 4px 8px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .sec .m{font-weight:500;color:var(--t3);font-size:12px}
-
-.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--shadow);position:relative}
+.card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
 .card.flush{padding:0;overflow:hidden}
-.card h3{font-size:17px;font-weight:600;letter-spacing:-.02em}
 .sub{font-size:13px;color:var(--t3);margin-top:3px;line-height:1.4}
-.row{display:flex;align-items:center;gap:12px}
 .between{display:flex;justify-content:space-between;align-items:center;gap:10px}
-
-/* numeri grandi: tracking negativo, interlinea stretta */
 .big{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:clamp(30px,8.4vw,40px);font-weight:600;letter-spacing:-.05em;line-height:1}
-.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--sep);border-radius:14px;overflow:hidden;margin-top:16px}
-.kpis>div{background:var(--card2);padding:10px 12px}
-.kpis small{display:block;font-size:11.5px;color:var(--t3);margin-bottom:3px}
-.kpis b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px;font-weight:600;letter-spacing:-.02em}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--sep);border-radius:13px;overflow:hidden;margin-top:14px}
+.kpis.k4{grid-template-columns:repeat(2,1fr)}
+@media (min-width:600px){.kpis.k4{grid-template-columns:repeat(4,1fr)}}
+.kpis>div{background:var(--card2);padding:10px 12px;min-width:0}
+.kpis small{display:block;font-size:11.5px;color:var(--t3);margin-bottom:3px;white-space:nowrap}
+.kpis b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:15px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}
 
-/* chip direzione: long = ambra, short = neutro (lo short non è una perdita) */
-.dir{display:inline-flex;align-self:flex-start;align-items:center;height:20px;padding:0 7px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.02em;flex:none}
+.dir{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;font-size:11px;font-weight:700;letter-spacing:.02em;flex:none;align-self:center}
 .dir.L{background:var(--a);color:#000}
 .dir.S{background:var(--fill2);color:var(--t1)}
-.tag{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;font-size:11px;font-weight:600;background:var(--fill);color:var(--t2);flex:none}
+.tag{display:inline-flex;align-items:center;height:20px;padding:0 7px;border-radius:6px;font-size:11px;font-weight:600;background:var(--fill);color:var(--t2);flex:none;white-space:nowrap}
 .tag.hi{background:var(--a-soft);color:var(--a-ink)}
 .tag.risk{background:var(--dn-soft);color:var(--dn-ink)}
 
-/* barra di esposizione */
-.expo{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px;background:var(--fill);margin-top:14px}
-.expo i{display:block;height:100%}
-.expo .L{background:var(--a)} .expo .S{background:var(--t4)}
-.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:12px;color:var(--t2)}
+/* posizioni e ordini */
+.prow{display:grid;grid-template-columns:1fr auto;gap:3px 12px;padding:13px 16px;border-top:.5px solid var(--sep)}
+.prow:first-child{border-top:0}
+.prow .c{display:flex;align-items:center;gap:7px;font-weight:600;font-size:15px;min-width:0}
+.prow .c small{font-weight:500;color:var(--t3);font-size:11.5px}
+.prow .v{text-align:right;font-family:var(--mono);font-weight:600;font-size:14.5px}
+.prow .d{font-size:12.5px;color:var(--t3);font-family:var(--mono)}
+.prow .d.r{text-align:right}
+.ladder{position:relative;height:6px;border-radius:3px;background:var(--fill);margin:8px 0 2px;grid-column:1/-1}
+.ladder i{position:absolute;top:-3px;width:2px;height:12px;border-radius:1px}
+
+/* ═════════ TABELLA OPERAZIONI ═════════ */
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--gut)) 12px;padding:0 var(--gut);overscroll-behavior-x:contain}
+.chips::-webkit-scrollbar{display:none}
+.chip{height:32px;padding:0 13px;border-radius:16px;background:var(--fill);font-size:13.5px;font-weight:500;white-space:nowrap;flex:none;transition:background .15s,color .15s,transform .12s var(--ease)}
+.chip:active{transform:scale(.95)}
+.chip[aria-pressed="true"]{background:var(--t1);color:var(--bg)}
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
+table{border-collapse:separate;border-spacing:0;width:100%;font-size:13px;min-width:860px}
+th{background:var(--card2);text-align:right;font-weight:600;font-size:11.5px;color:var(--t3);padding:10px 12px;white-space:nowrap;cursor:pointer;border-bottom:.5px solid var(--sep)}
+th:first-child,td:first-child{text-align:left;position:sticky;left:0;z-index:1}
+th:nth-child(2),td:nth-child(2){text-align:left}
+th[aria-sort="descending"]::after{content:" ↓"} th[aria-sort="ascending"]::after{content:" ↑"}
+td{padding:11px 12px;text-align:right;white-space:nowrap;border-bottom:.5px solid var(--sep);font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+td:first-child{background:var(--card);font-family:var(--font);letter-spacing:-.01em;box-shadow:.5px 0 0 var(--sep)}
+tr.tr{cursor:pointer}
+tr.tr:active td{background:var(--card2)}
+tr.det td{background:var(--card2);white-space:normal;text-align:left;padding:10px 12px 14px;font-family:var(--font)}
+.cell-coin{display:flex;align-items:center;gap:7px;font-weight:600}
+.cell-coin small{color:var(--t3);font-weight:400;font-size:11.5px;display:block;font-family:var(--mono)}
+.fills{display:grid;grid-template-columns:auto auto auto auto;justify-content:start;gap:4px 16px;font-family:var(--mono);font-size:12px;color:var(--t2);position:sticky;left:12px;max-width:calc(100vw - 2 * var(--gut) - 24px)}
+.fills b{font-weight:600}
+
+/* ═════════ BACKTEST ═════════ */
+.ctl{display:grid;gap:14px}
+@media (min-width:700px){.ctl{grid-template-columns:repeat(2,1fr)}}
+.ctl label{display:block;font-size:12.5px;font-weight:600;color:var(--t2);margin-bottom:6px}
+.segm{display:flex;padding:2px;border-radius:10px;background:var(--fill);gap:2px}
+.segm button{flex:1;height:34px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--t2);transition:background .2s,color .2s;white-space:nowrap}
+.segm button[aria-pressed="true"]{background:var(--card);color:var(--t1);box-shadow:0 1px 3px rgba(0,0,0,.14)}
+.inp{width:100%;height:38px;padding:0 12px;border-radius:10px;border:0;background:var(--fill);outline:none;font-family:var(--mono)}
+.inp:focus{box-shadow:0 0 0 2px var(--a)}
+.chart{position:relative;margin-top:16px;touch-action:pan-y}
+.chart svg{display:block;width:100%;height:220px;overflow:visible}
+.chart .tip{position:absolute;top:0;pointer-events:none;background:var(--card);box-shadow:0 4px 16px rgba(0,0,0,.18);border-radius:10px;padding:7px 10px;font-size:12px;white-space:nowrap;opacity:0;transition:opacity .12s;font-family:var(--mono)}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--t2);margin-top:8px;flex-wrap:wrap}
 .legend span{display:inline-flex;align-items:center;gap:6px}
-.legend i{width:8px;height:8px;border-radius:2px;display:inline-block}
-
-/* ═════════ CLUSTER: tre wallet affiancati ═════════ */
-.cmp{display:grid;grid-template-columns:minmax(64px,.8fr) repeat(3,minmax(0,1fr));font-size:13px}
-.cmp>div{padding:11px 8px;border-bottom:.5px solid var(--sep);min-width:0}
-.cmp>div:nth-child(4n+1){padding-left:16px}
-.cmp>div:nth-child(4n){padding-right:16px}
-.cmp .hd{background:var(--card2);padding-top:14px;padding-bottom:12px}
-.cmp .hd b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cmp .hd .m{display:block;font-size:12px;color:var(--t2);margin-top:2px}
-.cmp .hd .lv{font-size:11px;color:var(--t3)}
-.cmp .coin{font-weight:600;display:flex;flex-direction:column;justify-content:center;gap:2px}
-.cmp .coin small{font-size:11px;color:var(--t3);font-weight:500}
-.cmp .cell{display:flex;flex-direction:column;gap:3px}
-.cmp .cell .m{font-size:12.5px;font-weight:600}
-.cmp .cell small{font-size:11px;color:var(--t3);font-family:var(--mono)}
-.cmp .none{color:var(--t4)}
-.cmp .last{border-bottom:0}
-.spark{display:block;width:100%;height:22px;margin-top:6px}
-.ref{font-size:10px;font-weight:700;color:var(--a-ink);letter-spacing:.04em;text-transform:uppercase}
-
-.pending{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:.5px solid var(--sep)}
-.pending:first-child{border-top:0}
-.dots{display:flex;gap:4px;flex:none}
-.dots i{width:9px;height:9px;border-radius:50%;background:var(--fill2)}
-.dots i.on{background:var(--a)}
-
-/* ═════════ COPY ═════════ */
-.meter{position:relative;height:10px;border-radius:5px;background:var(--fill);margin:18px 0 8px;overflow:visible}
-.meter .fill{position:absolute;top:0;bottom:0;right:0;border-radius:5px;background:var(--dn);transition:width .5s var(--ease)}
-.meter .fill.ok{background:var(--a);left:0;right:auto}
-.meter .mark{position:absolute;top:-4px;bottom:-4px;width:2px;border-radius:1px;background:var(--t3)}
-.meter-lab{display:flex;justify-content:space-between;font-size:11.5px;color:var(--t3);font-family:var(--mono)}
-.callout{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:var(--a-soft);font-size:13.5px;color:var(--t1);margin-top:14px}
+.legend i{width:14px;height:3px;border-radius:2px;display:inline-block}
+.callout{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:13px;background:var(--a-soft);font-size:13.5px;margin-top:12px}
 .callout.risk{background:var(--dn-soft)}
 .callout svg{flex:none;width:18px;height:18px;margin-top:1px;color:var(--a-ink)}
 .callout.risk svg{color:var(--dn-ink)}
-.callout b{font-weight:600}
+.verdict{font-size:20px;font-weight:700;letter-spacing:-.02em;line-height:1.25}
 
-/* ═════════ LISTE (eventi, segnali) ═════════ */
-.list{background:var(--card);border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)}
-.item{display:flex;gap:12px;padding:13px 16px;position:relative}
-.item+.item::before{content:"";position:absolute;top:0;left:60px;right:0;border-top:.5px solid var(--sep)}
-.ico{width:32px;height:32px;border-radius:10px;display:grid;place-items:center;flex:none;background:var(--fill);color:var(--t2)}
-.ico svg{width:17px;height:17px}
-.ico.a{background:var(--a-soft);color:var(--a-ink)}
-.ico.r{background:var(--dn-soft);color:var(--dn-ink)}
-.item .body{flex:1;min-width:0}
-.item .l1{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:14.5px;font-weight:600;letter-spacing:-.015em}
-.item .l2{font-size:13px;color:var(--t2);margin-top:3px}
-.item .l3{font-size:12px;color:var(--t3);margin-top:3px;font-family:var(--mono)}
-.item time{font-size:12px;color:var(--t3);flex:none;font-family:var(--mono);padding-top:2px}
-.day{font-size:13px;font-weight:600;color:var(--t2);margin:20px 4px 8px}
-.day:first-child{margin-top:4px}
-
-.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--gut)) 14px;padding:0 var(--gut);scroll-snap-type:x proximity;overscroll-behavior-x:contain}
-.chips::-webkit-scrollbar{display:none}
-.chip{height:32px;padding:0 13px;border-radius:16px;background:var(--fill);color:var(--t1);font-size:13.5px;font-weight:500;white-space:nowrap;flex:none;scroll-snap-align:start;
-  transition:background .15s,color .15s,transform .12s var(--ease)}
-.chip:active{transform:scale(.95)}
-.chip[aria-pressed="true"]{background:var(--t1);color:var(--bg)}
-
-.empty{text-align:center;padding:36px 24px;color:var(--t3);font-size:14px}
+.empty{text-align:center;padding:30px 20px;color:var(--t3);font-size:14px}
 .empty b{display:block;color:var(--t1);font-size:16px;margin-bottom:6px;font-weight:600}
-
-/* posizioni (Lettura) */
-.prow{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:12px 16px;border-top:.5px solid var(--sep)}
-.prow .c{display:flex;align-items:center;gap:7px;font-weight:600;font-size:14.5px}
-.prow .c small{font-weight:500;color:var(--t3);font-size:11.5px}
-.prow .v{text-align:right;font-family:var(--mono);font-weight:600;font-size:14px}
-.prow .d{font-size:12px;color:var(--t3);font-family:var(--mono)}
-.prow .d.r{text-align:right}
-.whead{padding:16px}
-
-details.card summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px}
-details.card summary::-webkit-details-marker{display:none}
-details.card summary::after{content:"";width:8px;height:8px;border-right:2px solid var(--t3);border-bottom:2px solid var(--t3);transform:rotate(45deg) translateY(-3px);transition:transform .25s var(--ease)}
-details[open].card summary::after{transform:rotate(-135deg) translateY(-1px)}
-.rules{margin-top:12px;font-size:13.5px;color:var(--t2);display:grid;gap:8px}
-.rules b{color:var(--t1);font-weight:600}
-.rules code{font-family:var(--mono);font-size:12.5px;background:var(--fill);padding:2px 6px;border-radius:5px;color:var(--t1)}
-
 .sk{border-radius:8px;background:linear-gradient(90deg,var(--fill) 25%,var(--fill2) 50%,var(--fill) 75%);background-size:200% 100%;height:14px}
 @media (prefers-reduced-motion:no-preference){.sk{animation:sh 1.4s linear infinite}}
 @keyframes sh{to{background-position:-200% 0}}
-
+.spark{display:block;width:100%;height:56px;margin-top:12px}
 footer{font-size:12px;color:var(--t3);text-align:center;margin-top:32px;line-height:1.6}
 
-/* ═════════ SHEET IMPOSTAZIONI ═════════ */
+/* sheet impostazioni */
 .scrim{position:fixed;inset:0;z-index:80;background:var(--scrim);opacity:0;pointer-events:none}
 .sheet{position:fixed;left:0;right:0;bottom:0;z-index:90;max-width:560px;margin:0 auto;background:var(--card);border-radius:22px 22px 0 0;
   padding:8px calc(20px + var(--sr)) calc(24px + var(--sb)) calc(20px + var(--sl));transform:translateY(110%);will-change:transform;
   box-shadow:0 -10px 40px rgba(0,0,0,.18);max-height:92dvh;overflow-y:auto;overscroll-behavior:contain}
 .grab{touch-action:none;padding:6px 0 14px;cursor:grab}
 .grab i{display:block;width:36px;height:5px;border-radius:3px;background:var(--fill2);margin:0 auto}
-.sheet h2{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:16px}
-.field{margin-bottom:18px}
-.field label{display:block;font-size:13px;font-weight:600;color:var(--t2);margin-bottom:7px}
-.field input{width:100%;height:46px;padding:0 14px;border-radius:12px;border:0;background:var(--fill);outline:none;font-family:var(--mono);font-size:16px}
-.field input:focus{box-shadow:0 0 0 2px var(--a)}
-.field .hint{font-size:12.5px;color:var(--t3);margin-top:6px}
-.segm{display:flex;padding:2px;border-radius:10px;background:var(--fill);gap:2px}
-.segm button{flex:1;height:34px;border-radius:8px;font-size:14px;font-weight:500;color:var(--t2);transition:background .2s,color .2s}
-.segm button[aria-pressed="true"]{background:var(--card);color:var(--t1);box-shadow:0 1px 3px rgba(0,0,0,.14)}
-.btn{width:100%;height:50px;border-radius:14px;background:var(--a);color:#000;font-weight:600;font-size:16px;transition:transform .12s var(--ease),filter .15s}
-.btn:active{transform:scale(.97);filter:brightness(.94)}
+.sheet h2{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:14px}
+.field{margin-bottom:16px}
+.field>label{display:block;font-size:13px;font-weight:600;color:var(--t2);margin-bottom:7px}
+.wedit{display:grid;grid-template-columns:110px 1fr;gap:6px;margin-bottom:6px}
+.btn{width:100%;height:50px;border-radius:14px;background:var(--a);color:#000;font-weight:600;font-size:16px;transition:transform .12s var(--ease)}
+.btn:active{transform:scale(.97)}
 
-/* hover solo dove c'è un puntatore vero */
 @media (hover:hover) and (pointer:fine){
-  .icon-btn:hover,.status:hover{background:var(--fill2)}
   .chip:hover{background:var(--fill2)} .chip[aria-pressed="true"]:hover{background:var(--t1)}
-  .tab:hover{color:var(--t1)}
+  tr.tr:hover td{background:var(--card2)}
+  .tab:hover{color:var(--t1)} .wallets button:hover{color:var(--t1)}
 }
-@media (prefers-reduced-transparency:reduce){
-  .top,.tabs{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}
-}
-@media (prefers-contrast:more){
-  .card,.list{box-shadow:0 0 0 1px var(--t3)}
-}
-@media (prefers-reduced-motion:reduce){
-  *{scroll-behavior:auto!important}
-  .meter .fill{transition:none}
-}
+@media (prefers-reduced-transparency:reduce){.top,.tabs{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}}
+@media (prefers-contrast:more){.card,.tbl-wrap{box-shadow:0 0 0 1px var(--t3)}}
 </style>
 </head>
 <body>
 
 <header class="top" id="top"><div class="top-in">
-  <div class="brand"><i id="dot"></i>Whale Desk</div>
-  <div class="mini" id="mini" aria-hidden="true"></div>
-  <button class="status" id="status" aria-label="Aggiorna"><span id="src">—</span><span class="m" id="ago"></span></button>
-  <button class="icon-btn" id="openSet" aria-label="Impostazioni">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z"/></svg>
-  </button>
+  <div class="row1">
+    <div class="brand"><i id="dot"></i>Whale Desk</div>
+    <span class="ago m" id="ago"></span>
+    <button class="icon-btn" id="refresh" aria-label="Aggiorna"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 11-2.6-6.4L21 8"/><path d="M21 3v5h-5"/></svg></button>
+    <button class="icon-btn" id="openSet" aria-label="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
+  </div>
+  <div class="wallets" id="wallets" role="tablist" aria-label="Wallet"></div>
 </div></header>
 
-<nav class="tabs" aria-label="Sezioni"><div class="tabs-in" role="tablist">
-  <button class="tab" role="tab" data-v="cluster" aria-selected="true">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.3 11l7.4-3.7M8.3 13l7.4 3.7"/></svg><span>Cluster</span></button>
-  <button class="tab" role="tab" data-v="copy" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg><span>Copy</span><b class="badge" id="bCopy"></b></button>
-  <button class="tab" role="tab" data-v="segnali" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12h3l3-7 4 14 3-7h3"/></svg><span>Segnali</span><b class="badge" id="bSig"></b></button>
-  <button class="tab" role="tab" data-v="eventi" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg><span>Eventi</span></button>
-  <button class="tab" role="tab" data-v="lettura" aria-selected="false">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span>Lettura</span></button>
-</div></nav>
+  <nav class="tabs" aria-label="Sezioni"><div class="tabs-in" role="tablist">
+    <button class="tab" role="tab" data-v="ora" aria-selected="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Adesso</span></button>
+    <button class="tab" role="tab" data-v="ordini" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h11M4 12h7M4 17h11"/><path d="M17 10l3 2-3 2"/></svg><span>Ordini</span><b class="badge" id="bOrd"></b></button>
+    <button class="tab" role="tab" data-v="trade" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M3 9h18M9 9v11"/></svg><span>Operazioni</span></button>
+    <button class="tab" role="tab" data-v="bt" aria-selected="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 19V5M4 19h16"/><path d="M7 15l4-4 3 3 5-6"/></svg><span>Backtest</span></button>
+  </div></nav>
 
 <main>
-<section class="view on" id="v-cluster">
-  <h1 class="title">Cluster</h1>
-  <p class="lede">Stesso operatore su tre conti. Si copia solo quando almeno due entrano sulla stessa coin entro 30 minuti.</p>
-  <div class="stack">
-    <div class="card" id="aggCard"><div class="sk" style="width:40%"></div><div class="sk" style="width:70%;height:34px;margin-top:12px"></div></div>
-    <div class="list" id="pendCard" hidden></div>
-    <div class="card flush" id="cmpCard"><div style="padding:16px"><div class="sk"></div></div></div>
+<section class="view on" id="v-ora">
+  <h1 id="oraTitle">Adesso</h1>
+  <p class="lede m" id="oraLede" style="font-size:12.5px"></p>
+  <div class="cols">
+    <div class="stack">
+      <div class="card" id="eqCard"><div class="sk" style="width:40%"></div><div class="sk" style="width:70%;height:34px;margin-top:12px"></div></div>
+      <div class="sec" style="margin-top:10px"><span>Posizioni aperte</span><span class="m" id="posN"></span></div>
+      <div class="card flush" id="posList"><div style="padding:16px"><div class="sk"></div></div></div>
+    </div>
+    <div class="stack">
+      <div class="card" id="statCard"><div class="sk"></div></div>
+      <div class="sec" style="margin-top:10px"><span>Ultime operazioni</span></div>
+      <div class="card flush" id="lastTrades"></div>
+    </div>
   </div>
 </section>
 
-<section class="view" id="v-copy">
-  <h1 class="title">Copy</h1>
-  <p class="lede">Posizione virtuale su 50.000 $ a metà leva rispetto al Cluster. Gli ordini restano manuali.</p>
-  <div class="stack" id="copyOpen"></div>
-  <div class="sec"><span>Capitale virtuale</span></div>
-  <div class="card" id="capCard"></div>
-  <div class="sec"><span>Operazioni chiuse</span><span class="m" id="closedN"></span></div>
-  <div id="copyClosed"></div>
-  <div class="sec"><span>Regole</span></div>
-  <details class="card"><summary>Sizing, stop e uscite</summary>
-    <div class="rules">
-      <div><b>Sizing.</b> <code>(50.000 / equity Cluster-1) × nozionale Cluster-1 × 0,5</code>. Metà leva: a leva piena il ritracciamento peggiore del trade migliore (−4,5% a ~4x) avrebbe fatto scattare lo stop.</div>
-      <div><b>Ingresso.</b> Solo con CLUSTER CONFERMATO: 2 wallet su 3 aprono sulla stessa coin entro 30 minuti. Un fill isolato non è un segnale.</div>
-      <div><b>Stop.</b> Chiusura a −10% del capitale (−5.000 $), pre-alert a −5%.</div>
-      <div><b>Uscite.</b> Chiusura totale quando 2/3 chiudono, riduzione proporzionale quando 2/3 riducono.</div>
-      <div><b>Backtest.</b> 0x2371 dal 25/06/2026, ritardo 1h, metà leva: 50k → ~99,5k. Sei trade, con survivorship bias: è un'indicazione, non una promessa.</div>
-    </div>
-  </details>
+<section class="view" id="v-ordini">
+  <h1>Ordini in attesa</h1>
+  <p class="lede">Le mosse future già decise: ordini limite nel book, stop e take profit. Per ognuno: se scatta, cosa fa alla posizione.</p>
+  <div id="ordList"></div>
 </section>
 
-<section class="view" id="v-segnali">
-  <h1 class="title">Segnali</h1>
-  <p class="lede">Combinazioni tra wallet negli ultimi 30 giorni.</p>
-  <div class="chips" id="sigChips" role="group" aria-label="Filtra i segnali"></div>
-  <div id="sigList"></div>
+<section class="view" id="v-trade">
+  <h1>Operazioni</h1>
+  <p class="lede">Ogni trade dall'apertura alla chiusura, ricostruito dai fill. Tocca una riga per vedere entrate e uscite, tocca un'intestazione per ordinare.</p>
+  <div class="card" id="tradeStats" style="margin-bottom:14px"></div>
+  <div class="chips" id="tradeChips" role="group" aria-label="Filtra"></div>
+  <div id="tradeTable"></div>
 </section>
 
-<section class="view" id="v-eventi">
-  <h1 class="title">Eventi</h1>
-  <p class="lede">Ogni mossa dei wallet monitorati. I fill della stessa coin entro 2 minuti diventano un evento solo.</p>
-  <div class="chips" id="evChips" role="group" aria-label="Filtra gli eventi"></div>
-  <div id="evList"></div>
+<section class="view" id="v-bt">
+  <h1>Backtest</h1>
+  <p class="lede">Cosa sarebbe successo copiando tutte le sue operazioni sul tuo capitale, con le regole qui sotto.</p>
+  <div class="card ctl" id="btCtl">
+    <div><label for="btCap">Capitale</label><input class="inp" id="btCap" type="text" inputmode="numeric" enterkeyhint="done" value="50000"></div>
+    <div><label>Leva rispetto a lui</label><div class="segm" data-k="factor">
+      <button data-v="0.25" aria-pressed="false">¼</button><button data-v="0.5" aria-pressed="true">½</button><button data-v="1" aria-pressed="false">uguale</button></div></div>
+    <div><label>Ritardo di ingresso</label><div class="segm" data-k="delay">
+      <button data-v="0" aria-pressed="false">0</button><button data-v="900000" aria-pressed="false">15 min</button><button data-v="3600000" aria-pressed="true">1 ora</button><button data-v="14400000" aria-pressed="false">4 ore</button></div></div>
+    <div><label>Stop per trade (% capitale)</label><div class="segm" data-k="stop">
+      <button data-v="0" aria-pressed="false">nessuno</button><button data-v="0.05" aria-pressed="false">5%</button><button data-v="0.1" aria-pressed="true">10%</button><button data-v="0.2" aria-pressed="false">20%</button></div></div>
+  </div>
+  <div id="btOut" style="margin-top:12px"></div>
 </section>
 
-<section class="view" id="v-lettura">
-  <h1 class="title">Lettura</h1>
-  <p class="lede">Wallet che si osservano senza copiarli. Danno contesto ai segnali del Cluster.</p>
-  <div class="grid2" id="readList"></div>
-  <div class="sec"><span>Archivio v12</span></div>
-  <details class="card" id="archCard"><summary>Wallet usciti dagli alert</summary><div id="archList" style="margin-top:6px"></div></details>
-</section>
-
-<footer>Dati dall'API pubblica di Hyperliquid e dal Worker Whale Desk.<br>Sola lettura, nessun ordine. Non è consulenza finanziaria.</footer>
+<footer>Dati in diretta dall'API pubblica di Hyperliquid. Sola lettura, nessun ordine.<br>Il backtest non è una previsione. Non è consulenza finanziaria.</footer>
 </main>
 
 <div class="scrim" id="scrim"></div>
 <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="setTitle">
   <div class="grab" id="grab"><i></i></div>
   <h2 id="setTitle">Impostazioni</h2>
-  <div class="field">
-    <label for="wurl">Indirizzo del Worker</label>
-    <input id="wurl" type="url" inputmode="url" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done" placeholder="https://whale-desk.<tuo>.workers.dev">
-    <div class="hint">Da qui arrivano segnali, eventi e copy. Senza Worker la dashboard mostra solo le posizioni, lette direttamente da Hyperliquid.</div>
-  </div>
-  <div class="field">
-    <label>Aspetto</label>
-    <div class="segm" id="themeSeg">
-      <button data-t="auto" aria-pressed="true">Auto</button><button data-t="light" aria-pressed="false">Chiaro</button><button data-t="dark" aria-pressed="false">Scuro</button>
-    </div>
-  </div>
+  <div class="field"><label>Wallet</label><div id="wEdit"></div></div>
+  <div class="field"><label>Aspetto</label>
+    <div class="segm" id="themeSeg"><button data-t="auto">Auto</button><button data-t="light">Chiaro</button><button data-t="dark">Scuro</button></div></div>
   <button class="btn" id="saveSet">Fatto</button>
 </div>
 
 <script>
 "use strict";
 /* ═════════ CONFIG ═════════ */
-const DEFAULT_WORKER = "https://whale-desk.square-shape-0876.workers.dev";
 const HL = "https://api.hyperliquid.xyz/info";
-const CAPITAL = 50000, STOP = .10, PRE = .05, FACTOR = .5;
-const WALLETS = [
-  { a:"0x237152b038d88f4156a0cd71090462de7e3f0883", n:"Cluster-1", g:"A", ref:true, note:"Swing + trade tattici" },
-  { a:"0xbd1c84113c6deb5044be0c2221f9e9403811ff0e", n:"Cluster-2", g:"A", note:"Replica Cluster-1" },
-  { a:"0xec7f9f5b31b8f5da6ac6c0973bbd496e16f9df39", n:"Cluster-3", g:"A", note:"Solo swing, a volte entra prima" },
-  { a:"0xc7290b4b308431a985fa9e3e8a335c2f7650517c", n:"Ribassista", g:"B", note:"Short di lungo periodo su BTC/ETH/HYPE e azioni HIP-3" },
-  { a:"0x9c16bc8f1104e4d2f72267eb981fa12de7cc4a6f", n:"Inversore", g:"B", note:"Rare inversioni su BTC · leva alta su SOL: non copiare" },
-  { a:"0x10e14ba2d77263543be1bdb2851b0933ddf4f4bd", n:"Macro", g:"B", note:"Indici e materie prime HIP-3" },
+const DEFAULT_WALLETS = [
+  { a: "0x237152b038d88f4156a0cd71090462de7e3f0883", n: "Cluster-1" },
+  { a: "0xc7290b4b308431a985fa9e3e8a335c2f7650517c", n: "Ribassista" },
+  { a: "0x9c16bc8f1104e4d2f72267eb981fa12de7cc4a6f", n: "Inversore" },
 ];
-const ARCHIVE = [
-  { a:"0x325edd95bb016c36027ce3b9f7595af7094a9564", n:"Metronomo", note:"Diventato market maker: non più leggibile" },
-  { a:"0xac26cf5f3c46b5e102048c65b977d2551b72a9c7", n:"Orologiaio", note:"Edge spento, fermo da mesi" },
-  { a:"0x8fc7c0442e582bca195978c5a4fdec2e7c5bb0f7", n:"Ribassista storico", note:"Sostituito dal nuovo Ribassista" },
-];
+const FEE = 0.00045, SLIP = 0.0005; // taker Hyperliquid + slittamento stimato, per lato
+const STABLES = new Set(["USDC", "USDT0", "USDH", "USDE", "USDT"]);
 
 /* ═════════ UTILITÀ ═════════ */
 const $ = (s) => document.querySelector(s), $$ = (s) => [...document.querySelectorAll(s)];
-const store = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch { return d; } },
-                set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+const store = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+                set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;" }[c]));
 const bare = (c) => { const i = c.indexOf(":"); return i < 0 ? c : c.slice(i + 1); };
 const dexOf = (c) => { const i = c.indexOf(":"); return i < 0 ? "" : c.slice(0, i); };
-const sgn = (x) => (x > 0 ? 1 : x < 0 ? -1 : 0);
+const sgn = (x) => (x > 1e-12 ? 1 : x < -1e-12 ? -1 : 0);
 const nf = (n, d = 0) => (n < 0 ? "−" : "") + Math.abs(n).toLocaleString("it-IT", { minimumFractionDigits: d, maximumFractionDigits: d });
 const usd = (n) => { const x = Math.abs(n);
-  const s = x >= 1e9 ? nf(x / 1e9, 2) + "B" : x >= 1e6 ? nf(x / 1e6, 1) + "M" : x >= 1e5 ? nf(x / 1e3, 0) + "k" : nf(x, 0);
+  const s = x >= 1e9 ? nf(x / 1e9, 2) + "B" : x >= 1e6 ? nf(x / 1e6, 2) + "M" : x >= 1e5 ? nf(x / 1e3, 0) + "k" : nf(x, 0);
   return (n < 0 ? "−" : "") + s + " $"; };
 const sUsd = (n) => (n >= 0 ? "+" : "") + usd(n);
 const px = (p) => nf(p, p >= 1000 ? 1 : p >= 10 ? 2 : p >= 1 ? 3 : 5);
 const qty = (q) => { const x = Math.abs(q); return nf(x, x >= 100 ? 0 : x >= 1 ? 2 : 4); };
 const lev = (x) => nf(x, x >= 10 ? 0 : 1) + "x";
-const pct = (x, d = 0) => nf(x * 100, d) + "%";
-const tone = (n) => (n >= 0 ? "pos" : "neg");
+const pct = (x, d = 1) => nf(x * 100, d) + "%";
+const sPct = (x, d = 1) => { if (Math.abs(x) * 100 < 0.5 / 10 ** d) x = 0; return (x >= 0 ? "+" : "") + pct(x, d); };
+const tone = (n) => (n > 0 ? "pos" : n < 0 ? "neg" : "");
 function dur(ms) { const m = Math.round(ms / 60e3), h = Math.floor(m / 60), g = Math.floor(h / 24);
-  return g >= 1 ? `${g}g ${h % 24}h` : h >= 1 ? `${h}h ${m % 60}m` : `${Math.max(m, 0)}m`; }
-const hhmm = (t) => new Date(t).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
-function dayLabel(t) {
-  const d = new Date(t), today = new Date(); const y = new Date(); y.setDate(today.getDate() - 1);
-  if (d.toDateString() === today.toDateString()) return "Oggi";
-  if (d.toDateString() === y.toDateString()) return "Ieri";
-  return d.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long" });
-}
-const dirChip = (d) => `<span class="dir ${d > 0 ? "L" : "S"}">${d > 0 ? "LONG" : "SHORT"}</span>`;
-const dexTag = (c) => dexOf(c) ? `<small>${esc(dexOf(c))}</small>` : "";
-
+  return g >= 1 ? `${g}g` + (h % 24 ? ` ${h % 24}h` : "") : h >= 1 ? `${h}h` + (m % 60 ? ` ${m % 60}m` : "") : `${Math.max(m, 0)}m`; }
+const dShort = (t) => new Date(t).toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "2-digit" });
+const dTime = (t) => new Date(t).toLocaleString("it-IT", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+const dirChip = (d, short) => `<span class="dir ${d > 0 ? "L" : "S"}">${short ? (d > 0 ? "L" : "S") : d > 0 ? "LONG" : "SHORT"}</span>`;
+const dexTag = (c) => (dexOf(c) ? `<small>${esc(dexOf(c))}</small>` : "");
+const isPerp = (c) => !c.startsWith("@") && !c.includes("/");
 const I = {
-  up: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
-  down: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg>',
-  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
-  minus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 12h14"/></svg>',
-  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
-  flip: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M7 4L3 8l4 4"/><path d="M3 8h13a5 5 0 010 10h-3"/></svg>',
-  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg>',
-  hands: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg>',
-  bolt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>',
-  compass: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>',
-  copy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="8" y="8" width="12" height="12" rx="2.5"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>',
-  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3l10 18H2z"/><path d="M12 10v4M12 17.5v.5"/></svg>',
   info: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 3l10 18H2z"/><path d="M12 10v4M12 17.5v.5"/></svg>',
 };
+
+const post = (b) => fetch(HL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
+  .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
 
 /* ═════════ TEMA ═════════ */
 const mqDark = matchMedia("(prefers-color-scheme: dark)");
+let theme = store.get("wd.theme", "auto");
 function applyTheme(t) {
   const root = document.documentElement;
   if (t === "auto") root.removeAttribute("data-theme"); else root.setAttribute("data-theme", t);
@@ -452,364 +354,554 @@ function applyTheme(t) {
   $$('meta[name="theme-color"]').forEach((m) => m.setAttribute("content", dark ? "#000000" : "#F2F2F7"));
   $$("#themeSeg button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.t === t)));
 }
-let theme = store.get("wd.theme", "auto");
 applyTheme(theme);
 mqDark.addEventListener?.("change", () => applyTheme(theme));
 
-/* ═════════ DATI ═════════ */
-const S = { data: null, src: null, t: 0, mids: {}, sigF: "tutti", evF: "tutti", view: "cluster" };
-let worker = (new URLSearchParams(location.search).get("worker") || store.get("wd.worker", DEFAULT_WORKER) || "").replace(/\/+$/, "");
+/* ═════════ STATO ═════════ */
+let WALLETS = store.get("wd.wallets", DEFAULT_WALLETS);
+const S = { w: Math.min(store.get("wd.sel", 0), WALLETS.length - 1), view: "ora", data: {}, candles: {}, tf: "tutte", sort: { k: "t0", d: -1 },
+  bt: { factor: 0.5, delay: 3600000, stop: 0.1 }, open: new Set() };
+let DEXS = null;
 
-const post = (b) => fetch(HL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(b) })
-  .then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.json(); });
-
-async function fromWorker() {
-  const r = await fetch(worker + "/state", { cache: "no-store" });
-  if (!r.ok) throw new Error("Worker " + r.status);
-  return r.json();
-}
-
-// senza Worker: posizioni lette direttamente, su tutti i DEX (HIP-3 incluso)
-let dexCache = null;
-async function fromHL() {
-  dexCache ||= (await post({ type: "perpDexs" }).catch(() => [null])).filter(Boolean).map((d) => d.name);
-  const all = [...WALLETS, ...ARCHIVE.map((w) => ({ ...w, g: "C" }))];
-  const wallet = await Promise.all(all.map(async (w) => {
-    const res = await Promise.all(["", ...dexCache].map((d) =>
-      post(d ? { type: "clearinghouseState", user: w.a, dex: d } : { type: "clearinghouseState", user: w.a }).catch(() => null)));
-    let eq = 0; const pos = [];
-    for (const s of res) {
-      if (!s) continue;
-      eq += +s.marginSummary?.accountValue || 0;
-      for (const { position: p } of s.assetPositions || []) pos.push({ coin: p.coin, sz: +p.szi, ntl: +p.positionValue, entry: +p.entryPx,
-        upnl: +p.unrealizedPnl, mark: +p.positionValue / Math.abs(+p.szi || 1), open: null });
-    }
-    pos.sort((x, y) => y.ntl - x.ntl);
-    return { ...w, eq, pos, eqh: [] };
-  }));
-  return { v: 13, t: Date.now(), wallet: wallet.filter((w) => w.g !== "C"), archivioLive: wallet.filter((w) => w.g === "C"),
-    archivio: ARCHIVE, eventi: [], segnali: [], copy: { aperte: [], chiuse: [], realizzato: 0 }, direct: true };
-}
-
-async function load() {
-  setStatus("…");
-  try {
-    if (!worker) throw new Error("no worker");
-    S.data = await fromWorker(); S.src = "Worker";
-  } catch {
-    try { S.data = await fromHL(); S.src = "Diretto"; }
-    catch { S.src = "Offline"; }
+/* ═════════ CARICAMENTO DATI ═════════ */
+async function allFills(a) {
+  let start = 0, out = [], seen = new Set();
+  for (let i = 0; i < 6; i++) {
+    const b = await post({ type: "userFillsByTime", user: a, startTime: start, aggregateByTime: true });
+    for (const f of b) { const k = f.tid + ":" + f.time; if (!seen.has(k)) { seen.add(k); out.push(f); } }
+    if (b.length < 2000) break;
+    start = b[b.length - 1].time;
   }
-  S.t = Date.now();
-  await refreshMids();
-  render();
+  return out.sort((x, y) => x.time - y.time || x.tid - y.tid);
+}
+async function refreshFills(w, old) {
+  const last = old.length ? old[old.length - 1].time : 0;
+  const b = await post({ type: "userFillsByTime", user: w.a, startTime: last, aggregateByTime: true }).catch(() => []);
+  const seen = new Set(old.map((f) => f.tid + ":" + f.time));
+  return [...old, ...b.filter((f) => !seen.has(f.tid + ":" + f.time))];
 }
 
-// prezzi live ogni 15 s: aggiornano nozionali e PnL del copy senza aspettare il Worker
-async function refreshMids() {
-  try { S.mids[""] = await post({ type: "allMids" }); } catch {}
-  const dexs = new Set();
-  for (const w of S.data?.wallet || []) for (const p of w.pos) if (dexOf(p.coin)) dexs.add(dexOf(p.coin));
-  await Promise.all([...dexs].map(async (d) => { try { S.mids[d] = await post({ type: "allMids", dex: d }); } catch {} }));
+async function loadWallet(w, light = false) {
+  DEXS ||= (await post({ type: "perpDexs" }).catch(() => [null])).filter(Boolean).map((d) => d.name);
+  const dexs = ["", ...DEXS];
+  const q = (type, d) => post(d ? { type, user: w.a, dex: d } : { type, user: w.a }).catch(() => null);
+  const prev = S.data[w.a];
+  const [states, orders, spot, port, fills] = await Promise.all([
+    Promise.all(dexs.map((d) => q("clearinghouseState", d))),
+    Promise.all(dexs.map((d) => q("frontendOpenOrders", d))),
+    q("spotClearinghouseState"),
+    light && prev ? prev.port : q("portfolio"),
+    light && prev ? refreshFills(w, prev.fills) : allFills(w.a),
+  ]);
+  if (!states[0]) throw new Error("Hyperliquid non risponde");
+  let perpEq = 0; const pos = [];
+  for (const s of states) {
+    if (!s) continue;
+    perpEq += +s.marginSummary?.accountValue || 0;
+    for (const { position: p } of s.assetPositions || []) pos.push({
+      coin: p.coin, sz: +p.szi, ntl: +p.positionValue, entry: +p.entryPx, upnl: +p.unrealizedPnl,
+      liq: p.liquidationPx ? +p.liquidationPx : null, mark: +p.positionValue / Math.abs(+p.szi || 1), fund: +(p.cumFunding?.sinceOpen || 0) });
+  }
+  // il conto unificato tiene il collaterale in USDC spot: fa parte dell'equity
+  const spotUsd = (spot?.balances || []).filter((b) => STABLES.has(b.coin)).reduce((s, b) => s + +b.total, 0);
+  const ord = orders.flat().filter(Boolean);
+  const eqHist = (port?.find?.(([k]) => k === "allTime")?.[1]?.accountValueHistory || []).map(([t, v]) => [t, +v]).filter((x) => x[1] > 0);
+  pos.sort((x, y) => y.ntl - x.ntl);
+  const d = { t: Date.now(), eq: perpEq + spotUsd, perpEq, spotUsd, pos, ord, port, eqHist, fills };
+  d.trades = buildTrades(d);
+  S.data[w.a] = d;
+  return d;
 }
-const mid = (coin, fallback) => +(S.mids[dexOf(coin)]?.[coin]) || fallback;
+
+// equity del wallet a un istante, dallo storico del portafoglio
+function eqAt(d, t) {
+  const h = d.eqHist;
+  if (!h.length) return d.eq;
+  if (t <= h[0][0]) return h[0][1];
+  for (let i = 1; i < h.length; i++) if (h[i][0] >= t) {
+    const [t0, v0] = h[i - 1], [t1, v1] = h[i];
+    return v0 + (v1 - v0) * (t - t0) / (t1 - t0 || 1);
+  }
+  return h[h.length - 1][1];
+}
+
+/* ═════════ RICOSTRUZIONE DEI TRADE ═════════
+   Un trade va da posizione 0 a posizione 0 sulla stessa coin. Un'inversione chiude un trade e ne apre un altro. */
+function buildTrades(d) {
+  const open = {}, trades = [];
+  const mk = (coin, dir, t, partial) => ({ coin, dir, t0: t, t1: null, entries: [], exits: [], pnl: 0, fees: 0, pos: 0, maxSz: 0, partial, fills: [] });
+  for (const f of d.fills) {
+    if (!isPerp(f.coin)) continue;
+    const s0 = +f.startPosition, q = (f.side === "B" ? 1 : -1) * +f.sz, p = +f.px, fee = +f.fee;
+    let t = open[f.coin];
+    if (!t && sgn(s0)) t = open[f.coin] = mk(f.coin, sgn(s0), f.time, true);
+    if (t) t.pos = s0;
+    if (sgn(s0) && sgn(q) !== sgn(s0)) {
+      const cq = Math.min(Math.abs(q), Math.abs(s0)), share = cq / Math.abs(q);
+      t.exits.push({ t: f.time, px: p, sz: cq }); t.pnl += +f.closedPnl; t.fees += fee * share;
+      t.fills.push({ t: f.time, px: p, sz: cq, k: "esce" });
+      t.pos = s0 + sgn(q) * cq;
+      if (Math.abs(t.pos) < 1e-9) {
+        t.t1 = f.time; trades.push(t); delete open[f.coin];
+        const rest = Math.abs(q) - cq;
+        if (rest > 1e-9) {
+          const n = open[f.coin] = mk(f.coin, sgn(q), f.time, false);
+          n.entries.push({ t: f.time, px: p, sz: rest }); n.fees += fee * (1 - share); n.pos = sgn(q) * rest; n.maxSz = rest;
+          n.fills.push({ t: f.time, px: p, sz: rest, k: "entra" });
+        }
+        continue;
+      }
+    } else {
+      if (!t) t = open[f.coin] = mk(f.coin, sgn(q), f.time, false);
+      t.entries.push({ t: f.time, px: p, sz: Math.abs(q) }); t.fees += fee; t.pnl += +f.closedPnl;
+      t.fills.push({ t: f.time, px: p, sz: Math.abs(q), k: "entra" });
+      t.pos = s0 + q;
+    }
+    t.maxSz = Math.max(t.maxSz, Math.abs(t.pos), Math.abs(s0));
+  }
+  for (const t of Object.values(open)) trades.push(t);
+  const vw = (xs) => { const s = xs.reduce((a, x) => a + x.sz, 0); return s ? xs.reduce((a, x) => a + x.px * x.sz, 0) / s : null; };
+  for (const t of trades) {
+    t.avgIn = vw(t.entries); t.avgOut = vw(t.exits);
+    const live = !t.t1 && d.pos.find((p) => p.coin === t.coin);
+    t.status = t.t1 || !live ? "chiuso" : "aperto";
+    if (!t.t1 && !live) t.t1 = t.fills[t.fills.length - 1]?.t ?? t.t0;
+    if (live) { t.upnl = live.upnl; t.mark = live.mark; t.avgIn ||= live.entry; }
+    t.ntl = t.maxSz * (t.avgIn || t.avgOut || 0);
+    t.eq0 = eqAt(d, t.t0);
+    t.lev = t.ntl / (t.eq0 || 1);
+    t.net = t.pnl - t.fees + (t.upnl || 0);
+    t.roe = t.net / (t.eq0 || 1);
+    t.move = t.avgIn && (t.avgOut || t.mark) ? t.dir * ((t.avgOut || t.mark) / t.avgIn - 1) : null;
+    t.dur = (t.t1 || Date.now()) - t.t0;
+  }
+  return trades.sort((a, b) => a.t0 - b.t0);
+}
+
+/* ═════════ CANDELE (ritardo, mark-to-market e stop del backtest) ═════════ */
+async function candles(coin, from) {
+  if (S.candles[coin] && S.candles[coin].from <= from) return S.candles[coin];
+  const now = Date.now();
+  const get = (iv, start) => post({ type: "candleSnapshot", req: { coin, interval: iv, startTime: start, endTime: now } }).catch(() => []);
+  // Hyperliquid tiene le ultime 5000 candele per intervallo: 1h copre ~7 mesi, 4h ~2 anni
+  const [h1, h4] = await Promise.all([get("1h", Math.max(from, now - 4990 * 3600e3)), from < now - 4900 * 3600e3 ? get("4h", from) : []]);
+  const map = (c) => ({ t: c.t, T: c.T, o: +c.o, h: +c.h, l: +c.l, c: +c.c });
+  return (S.candles[coin] = { from, h1: h1.map(map), h4: h4.map(map) });
+}
+function candleAt(cs, t) {
+  for (const arr of [cs.h1, cs.h4]) {
+    if (!arr.length || t < arr[0].t || t > arr[arr.length - 1].T) continue;
+    let lo = 0, hi = arr.length - 1;
+    while (lo < hi) { const m = (lo + hi + 1) >> 1; if (arr[m].t <= t) lo = m; else hi = m - 1; }
+    return arr[lo];
+  }
+  return null;
+}
+// prezzo a un istante: interpolazione dentro la candela che lo contiene
+function priceAt(cs, t) {
+  const c = candleAt(cs, t);
+  if (!c) return null;
+  const f = Math.min(1, Math.max(0, (t - c.t) / (c.T - c.t || 1)));
+  return c.o + (c.c - c.o) * f;
+}
+
+/* ═════════ BACKTEST ═════════
+   Ogni fill di un trade viene ripetuto in proporzione: (mia equity / sua equity all'apertura) × fattore di leva.
+   Prezzo: il suo, o quello di mercato dopo il ritardo scelto. Commissioni e slittamento su ogni fill.
+   Lo stop chiude il trade quando la perdita supera la soglia sul capitale di quel momento, controllato sui minimi/massimi orari. */
+async function backtest(d, cfg) {
+  const trades = d.trades.filter((t) => !t.partial);
+  if (!trades.length) return null;
+  const coins = [...new Set(trades.map((t) => t.coin))];
+  const start = trades[0].t0, now = Date.now();
+  const cs = {};
+  await Promise.all(coins.map(async (c) => { cs[c] = await candles(c, start - 3600e3); }));
+
+  const ev = [];
+  trades.forEach((t, i) => t.fills.forEach((f, j) => ev.push({ k: "f", t: f.t + cfg.delay, f, i, last: j === t.fills.length - 1 })));
+  for (let h = Math.floor(start / 3600e3) * 3600e3 + 3600e3; h <= now; h += 3600e3) ev.push({ k: "h", t: h });
+  ev.sort((a, b) => a.t - b.t || (a.k === "f" ? -1 : 1));
+
+  let cash = cfg.capital;
+  const st = trades.map(() => ({ q: 0, avg: 0, real: 0, cost: 0, ratio: 0, eq0: 0, stopped: false, done: false, maxNtl: 0, inPx: [], outPx: [] }));
+  const mark = {}, hi = {}, lo = {};
+  const curve = [];
+  let peak = cfg.capital, maxDD = 0;
+
+  const unreal = () => st.reduce((s, m, i) => s + (m.q ? sgn(m.q) * ((mark[trades[i].coin] ?? m.avg) - m.avg) * Math.abs(m.q) : 0), 0);
+  const equity = () => cash + unreal();
+  const exec = (m, i, qty, price) => {   // qty con segno: + compra, − vende
+    const p = price * (1 + sgn(qty) * SLIP), fee = Math.abs(qty) * p * FEE;
+    m.cost += fee; cash -= fee;
+    if (!m.q || sgn(m.q) === sgn(qty)) {
+      m.avg = (m.avg * Math.abs(m.q) + p * Math.abs(qty)) / (Math.abs(m.q) + Math.abs(qty));
+      m.q += qty; m.inPx.push([p, Math.abs(qty)]);
+    } else {
+      const c = Math.min(Math.abs(qty), Math.abs(m.q)), r = sgn(m.q) * (p - m.avg) * c;
+      m.real += r; cash += r; m.q += sgn(qty) * c; m.outPx.push([p, c]);
+      if (Math.abs(m.q) < 1e-12) m.q = 0;
+    }
+    m.maxNtl = Math.max(m.maxNtl, Math.abs(m.q) * p);
+  };
+
+  for (const e of ev) {
+    if (e.k === "f") {
+      if (e.t > now) continue;
+      const t = trades[e.i], m = st[e.i];
+      if (m.stopped || m.done) continue;
+      const price = cfg.delay ? priceAt(cs[t.coin], e.t) ?? e.f.px : e.f.px;
+      if (!m.ratio) { m.eq0 = equity(); m.ratio = (m.eq0 / (t.eq0 || 1)) * cfg.factor; }
+      exec(m, e.i, (e.f.k === "entra" ? t.dir : -t.dir) * e.f.sz * m.ratio, price);
+      mark[t.coin] = price;
+      if (e.last && t.status === "chiuso") { if (m.q) exec(m, e.i, -m.q, price); m.done = true; }
+    } else {
+      for (const c of coins) { const k = candleAt(cs[c], e.t - 1); if (k) { mark[c] = k.c; hi[c] = k.h; lo[c] = k.l; } }
+      if (cfg.stop) st.forEach((m, i) => {
+        if (!m.q || m.stopped) return;
+        const c = trades[i].coin, d0 = sgn(m.q), worst = d0 > 0 ? lo[c] : hi[c];
+        if (worst == null) return;
+        const lim = -cfg.stop * m.eq0;
+        if (m.real - m.cost + d0 * (worst - m.avg) * Math.abs(m.q) <= lim) {
+          const stopPx = m.avg + (lim - m.real + m.cost) / (d0 * Math.abs(m.q));
+          exec(m, i, -m.q, stopPx / (1 - d0 * SLIP)); // lo slittamento è già nella soglia
+          m.stopped = true;
+        }
+      });
+      const eq = equity();
+      peak = Math.max(peak, eq); maxDD = Math.max(maxDD, (peak - eq) / peak);
+      curve.push([e.t, eq]);
+    }
+  }
+
+  // il suo rendimento trade per trade, alla sua leva, sulla stessa scala del tuo capitale
+  let theirs = cfg.capital; const theirCurve = [[start, cfg.capital]];
+  for (const t of trades.filter((t) => t.status === "chiuso").sort((a, b) => a.t1 - b.t1)) { theirs *= 1 + t.roe; theirCurve.push([t.t1, theirs]); }
+  const openRoe = trades.filter((t) => t.status === "aperto").reduce((s, t) => s + t.roe, 0);
+  theirCurve.push([now, theirs * (1 + openRoe)]);
+
+  const vw = (xs) => { const s = xs.reduce((a, x) => a + x[1], 0); return s ? xs.reduce((a, x) => a + x[0] * x[1], 0) / s : null; };
+  const rows = trades.map((t, i) => {
+    const m = st[i];
+    const openPnl = m.q ? sgn(m.q) * ((mark[t.coin] ?? m.avg) - m.avg) * Math.abs(m.q) : 0;
+    const net = m.real - m.cost + openPnl;
+    return { t, inPx: vw(m.inPx), outPx: vw(m.outPx), net, roe: net / (m.eq0 || cfg.capital), maxNtl: m.maxNtl, lev: m.maxNtl / (m.eq0 || cfg.capital), stopped: m.stopped, open: !!m.q };
+  }).filter((r) => r.inPx != null);
+
+  const final = equity();
+  const closed = rows.filter((r) => !r.open);
+  return {
+    final, ret: final / cfg.capital - 1, maxDD, curve, theirCurve, rows,
+    win: closed.length ? closed.filter((r) => r.net > 0).length / closed.length : 0, n: rows.length, nClosed: closed.length,
+    stops: rows.filter((r) => r.stopped).length, theirRet: theirCurve[theirCurve.length - 1][1] / cfg.capital - 1,
+    skipped: d.trades.filter((t) => t.partial).length, from: start,
+  };
+}
 
 /* ═════════ RENDER ═════════ */
-function setStatus(txt) { $("#src").textContent = txt; }
-function tickAgo() {
-  const s = Math.round((Date.now() - S.t) / 1000);
-  $("#ago").textContent = S.t ? (s < 60 ? s + "s" : Math.round(s / 60) + "m") : "";
-  $("#dot").classList.toggle("off", !S.t || s > 120 || S.src === "Offline");
-}
+const W = () => WALLETS[S.w];
+const D = () => S.data[W().a];
 
-function livePos(p) { const m = mid(p.coin, p.mark); return { ...p, mark: m, ntl: Math.abs(p.sz) * m }; }
-function liveWallet(w) { return { ...w, pos: w.pos.map(livePos) }; }
+function renderWallets() {
+  $("#wallets").innerHTML = WALLETS.map((w, i) => `<button role="tab" data-i="${i}" aria-selected="${i === S.w}">
+    <b>${esc(w.n)}</b><small>${w.a.slice(0, 6)}…${w.a.slice(-4)}</small></button>`).join("");
+}
+$("#wallets").addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b || +b.dataset.i === S.w) return;
+  S.w = +b.dataset.i; store.set("wd.sel", S.w); S.open.clear(); S.tf = "tutte"; renderWallets();
+  if (D()) render(); load(!!D());
+});
 
 function render() {
-  setStatus(S.src || "—");
+  const d = D();
   tickAgo();
-  if (!S.data) {
-    $("#aggCard").innerHTML = `<div class="empty"><b>Nessun dato</b>Hyperliquid non risponde. Riprovo tra poco.</div>`;
-    return;
-  }
-  renderCluster(); renderCopy(); renderSignals(); renderEvents(); renderRead();
+  if (!d) return;
+  renderNow(d); renderOrders(d); renderTrades(d);
+  if (S.view === "bt") runBacktest();
 }
 
 function spark(h) {
   if (!h || h.length < 3) return "";
   const v = h.map((x) => x[1]), lo = Math.min(...v), hi = Math.max(...v), r = hi - lo || 1;
-  const pts = v.map((y, i) => `${(i / (v.length - 1) * 100).toFixed(1)},${(20 - (y - lo) / r * 18 - 1).toFixed(1)}`).join(" ");
-  const down = v[v.length - 1] < v[0];
-  return `<svg class="spark" viewBox="0 0 100 20" preserveAspectRatio="none" aria-label="Equity 48h"><polyline points="${pts}" fill="none" stroke="${down ? "var(--dn)" : "var(--a)"}" stroke-width="1.6" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
+  const pts = v.map((y, i) => `${(i / (v.length - 1) * 100).toFixed(2)},${(52 - (y - lo) / r * 48 - 2).toFixed(2)}`).join(" ");
+  return `<svg class="spark" viewBox="0 0 100 56" preserveAspectRatio="none" aria-label="Storico equity">
+    <polyline points="0,56 ${pts} 100,56" fill="var(--a-soft)" stroke="none"/>
+    <polyline points="${pts}" fill="none" stroke="var(--a)" stroke-width="1.8" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>`;
 }
 
-function renderCluster() {
-  const A = S.data.wallet.filter((w) => w.g === "A").map(liveWallet);
-  const eqT = A.reduce((s, w) => s + w.eq, 0);
-  // esposizione aggregata per coin (netta, con segno)
-  const agg = {};
-  for (const w of A) for (const p of w.pos) {
-    const k = bare(p.coin); agg[k] ||= { coin: k, net: 0, gross: 0, n: 0 };
-    agg[k].net += sgn(p.sz) * p.ntl; agg[k].gross += p.ntl; agg[k].n++;
-  }
-  const coins = Object.values(agg).sort((x, y) => y.gross - x.gross);
-  const gross = coins.reduce((s, c) => s + c.gross, 0);
-  const net = coins.reduce((s, c) => s + c.net, 0);
-  $("#aggCard").innerHTML = `
-    <div class="between"><span class="sub" style="margin:0">Esposizione aggregata</span>${coins[0] ? dirChip(sgn(net)) : ""}</div>
-    <div class="big" style="margin-top:8px">${usd(Math.abs(net))}</div>
-    <div class="sub">${coins.length ? `netta su ${coins.length} coin · lorda ${usd(gross)}` : "Il Cluster è flat: nessuna posizione aperta."}</div>
-    ${coins.length ? `<div class="expo" role="img" aria-label="Ripartizione per coin">${coins.map((c) =>
-      `<i class="${c.net >= 0 ? "L" : "S"}" style="flex:${Math.max(c.gross / gross, .02)}" title="${esc(c.coin)}"></i>`).join("")}</div>
-    <div class="legend">${coins.slice(0, 6).map((c) => `<span><i style="background:${c.net >= 0 ? "var(--a)" : "var(--t4)"}"></i>${esc(c.coin)} <b class="m">${usd(Math.abs(c.net))}</b></span>`).join("")}</div>` : ""}
-    <div class="kpis">
-      <div><small>Equity</small><b>${usd(eqT)}</b></div>
-      <div><small>Leva effettiva</small><b>${lev(eqT ? gross / eqT : 0)}</b></div>
-      <div><small>Copy teorico</small><b>${theoretical(A)}</b></div>
-    </div>`;
-
-  // eventi del Cluster negli ultimi 30 minuti ancora senza conferma
-  const now = Date.now();
-  const recent = (S.data.eventi || []).filter((e) => e.g === "A" && now - e.t1 < 30 * 60e3);
-  const groups = {};
-  for (const e of recent) {
-    const d = e.type === "CHIUSURA" ? sgn(e.start) : sgn(e.end);
-    const norm = e.type === "APERTURA" || e.type === "INVERSIONE" ? "ENTRATA" : e.type;
-    const k = bare(e.coin) + norm + d; (groups[k] ||= { coin: bare(e.coin), norm, d, w: new Set(), conf: false });
-    groups[k].w.add(e.w); groups[k].conf ||= !!e.confirmed;
-  }
-  const pend = Object.values(groups);
-  const pc = $("#pendCard");
-  pc.hidden = !pend.length;
-  pc.innerHTML = pend.map((g) => `<div class="pending">
-      <div class="dots">${[0, 1, 2].map((i) => `<i class="${i < g.w.size ? "on" : ""}"></i>`).join("")}</div>
-      <div style="flex:1;min-width:0"><b style="font-weight:600">${esc(g.coin)}</b> · ${g.norm.toLowerCase()} ${g.d > 0 ? "long" : "short"}
-        <div class="sub" style="margin:2px 0 0">${g.conf || g.w.size >= 2 ? "Confermato: segnale di copy" : "1 su 3: in attesa di conferma"}</div></div>
-      ${g.conf || g.w.size >= 2 ? '<span class="tag hi">2/3</span>' : '<span class="tag">attesa</span>'}
-    </div>`).join("");
-
-  // tabella affiancata
-  const rows = [...new Set(A.flatMap((w) => w.pos.map((p) => p.coin)))]
-    .sort((x, y) => (agg[bare(y)]?.gross || 0) - (agg[bare(x)]?.gross || 0));
-  let h = `<div class="cmp"><div class="hd"></div>` + A.map((w) => `<div class="hd">
-      ${w.ref ? '<span class="ref">Riferimento</span>' : ""}<b>${esc(w.n)}</b>
-      <span class="m">${usd(w.eq)}</span>
-      <span class="lv m">${lev(w.eq ? w.pos.reduce((s, p) => s + p.ntl, 0) / w.eq : 0)}</span>${spark(w.eqh)}</div>`).join("");
-  rows.forEach((coin, i) => {
-    const last = i === rows.length - 1 ? " last" : "";
-    h += `<div class="coin${last}">${esc(bare(coin))}${dexTag(coin)}</div>`;
-    for (const w of A) {
-      const p = w.pos.find((x) => x.coin === coin);
-      h += p ? `<div class="cell${last}">${dirChip(sgn(p.sz)).replace(/LONG|SHORT/, (s) => s[0])}
-          <span class="m">${usd(p.ntl)}</span><small>${pct(p.ntl / (w.eq || 1))} eq · <span class="${tone(p.upnl)}">${sUsd(p.upnl)}</span></small></div>`
-        : `<div class="cell none${last}">—</div>`;
-    }
-  });
-  if (!rows.length) h += `<div class="coin last mut" style="grid-column:1/-1;text-align:center;padding:24px">Nessuna posizione aperta</div>`;
-  $("#cmpCard").innerHTML = h + "</div>";
+function stats(trades) {
+  const closed = trades.filter((t) => t.status === "chiuso" && !t.partial);
+  const wins = closed.filter((t) => t.net > 0);
+  const tot = closed.reduce((s, t) => s + t.net, 0);
+  const avgDur = closed.length ? closed.reduce((s, t) => s + t.dur, 0) / closed.length : 0;
+  const avgLev = closed.length ? closed.reduce((s, t) => s + t.lev, 0) / closed.length : 0;
+  const best = closed.reduce((a, t) => (!a || t.roe > a.roe ? t : a), null);
+  const worst = closed.reduce((a, t) => (!a || t.roe < a.roe ? t : a), null);
+  return { closed, tot, avgDur, avgLev, best, worst, win: closed.length ? wins.length / closed.length : 0 };
 }
 
-// copia della posizione principale di Cluster-1 con la formula di sizing, a scopo indicativo
-function theoretical(A) {
-  const r = A.find((w) => w.ref); const p = r?.pos[0];
-  if (!p || !r.eq) return "—";
-  return lev((CAPITAL / r.eq) * p.ntl * FACTOR / CAPITAL);
-}
-
-function renderCopy() {
-  const c = S.data.copy || { aperte: [], chiuse: [], realizzato: 0 };
-  const open = (c.aperte || []).map((cp) => {
-    const m = mid(cp.coin, cp.mark);
-    const pnl = cp.realized + cp.dir * (m - cp.entry) * cp.sz - cp.fund;
-    return { ...cp, mark: m, pnl, ntl: cp.sz * m };
-  });
-  $("#bCopy").textContent = open.length; $("#bCopy").classList.toggle("on", open.length > 0);
-
-  if (!open.length) {
-    const A = S.data.wallet.filter((w) => w.g === "A").map(liveWallet);
-    const r = A.find((w) => w.ref); const p = r?.pos[0];
-    let hint = "";
-    if (p && r.eq) {
-      const tgt = (CAPITAL / r.eq) * p.ntl * FACTOR, l = tgt / CAPITAL;
-      hint = `<div class="callout${l > 2 ? " risk" : ""}">${l > 2 ? I.warn : I.info}<div>
-        Se si copiasse ora ${esc(bare(p.coin))} ${p.sz > 0 ? "long" : "short"} di ${esc(r.n)}: <b class="m">${usd(tgt)}</b>, leva <b class="m">${lev(l)}</b> sul capitale.
-        ${l > 2 ? ` Fuori dal range storico 1–2x: a questa leva lo stop del 10% scatta con un movimento del ${pct(STOP / l, 1)}.` : ""}</div></div>`;
-    }
-    $("#copyOpen").innerHTML = `<div class="card"><div class="empty" style="padding:20px 8px 8px"><b>Nessuna posizione copiata</b>
-      Si apre quando 2 wallet su 3 del Cluster entrano sulla stessa coin entro 30 minuti.</div>${S.data.direct ? `<div class="callout">${I.info}<div>Collega il Worker nelle impostazioni per ricevere segnali e copy.</div></div>` : hint}</div>`;
-  } else {
-    $("#copyOpen").innerHTML = open.map((cp) => {
-      const loss = Math.max(0, -cp.pnl), used = Math.min(loss / (STOP * CAPITAL), 1);
-      const stopPx = cp.entry - cp.dir * (STOP * CAPITAL + cp.realized - cp.fund) / cp.sz;
-      const dist = Math.abs(cp.mark - stopPx) / cp.mark;
-      const fundPct = cp.fund / (cp.ntl || 1);
-      return `<div class="card">
-        <div class="between"><div class="row" style="gap:8px">${dirChip(cp.dir)}<h3>${esc(cp.bare)}</h3></div><span class="sub m" style="margin:0">da ${dur(Date.now() - cp.t)}</span></div>
-        <div class="big ${tone(cp.pnl)}" style="margin-top:14px">${sUsd(cp.pnl)}</div>
-        <div class="sub">${pct(cp.pnl / CAPITAL, 1)} del capitale · nozionale ${usd(cp.ntl)} (${lev(cp.ntl / CAPITAL)})</div>
-        <div class="meter" role="meter" aria-label="Distanza dallo stop" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(used * 100)}">
-          ${cp.pnl >= 0 ? `<div class="fill ok" style="width:${Math.min(cp.pnl / (STOP * CAPITAL), 1) * 100}%"></div>` : `<div class="fill" style="left:0;right:auto;width:${used * 100}%"></div>`}
-          <div class="mark" style="left:50%" title="Pre-alert −5%"></div>
-        </div>
-        <div class="meter-lab"><span>0</span><span>−5% pre-alert</span><span>−10% stop</span></div>
-        <div class="kpis">
-          <div><small>Entry</small><b>${px(cp.entry)}</b></div>
-          <div><small>Prezzo</small><b>${px(cp.mark)}</b></div>
-          <div><small>Stop</small><b>${px(stopPx)}</b></div>
-          <div><small>Distanza</small><b>${pct(dist, 1)}</b></div>
-          <div><small>Size</small><b>${qty(cp.sz)}</b></div>
-          <div><small>Funding</small><b class="${cp.fund > 0 ? "neg" : cp.fund < 0 ? "pos" : ""}">${pct(fundPct, 2)}</b></div>
-        </div>
-        ${loss >= PRE * CAPITAL ? `<div class="callout risk">${I.warn}<div><b>Oltre il pre-alert.</b> Lo stop è a ${px(stopPx)}.</div></div>` : ""}
-        ${fundPct > .005 ? `<div class="callout risk">${I.warn}<div><b>Funding oltre lo 0,5%</b> del nozionale.</div></div>` : ""}
-      </div>`;
-    }).join("");
-  }
-
-  const closed = c.chiuse || [];
-  const realized = c.realizzato || 0;
-  const unreal = open.reduce((s, x) => s + x.pnl, 0);
-  $("#capCard").innerHTML = `<div class="between"><span class="sub" style="margin:0">Capitale + PnL</span></div>
-    <div class="big" style="margin-top:8px">${usd(CAPITAL + realized + unreal)}</div>
-    <div class="kpis"><div><small>Iniziale</small><b>${usd(CAPITAL)}</b></div>
-      <div><small>Realizzato</small><b class="${tone(realized)}">${sUsd(realized)}</b></div>
-      <div><small>Aperto</small><b class="${tone(unreal)}">${sUsd(unreal)}</b></div></div>`;
-  $("#closedN").textContent = closed.length ? closed.length + " trade" : "";
-  $("#copyClosed").innerHTML = closed.length ? `<div class="list">${closed.map((x) => `<div class="item">
-      <div class="ico ${x.pnl >= 0 ? "a" : "r"}">${x.pnl >= 0 ? I.up : I.down}</div>
-      <div class="body"><div class="l1">${dirChip(x.dir)} ${esc(x.bare)}</div>
-        <div class="l2">${px(x.entry)} → ${px(x.exit)} · ${esc(x.why)}</div>
-        <div class="l3">${dur(x.t1 - x.t)}</div></div>
-      <div class="m ${tone(x.pnl)}" style="font-weight:600;white-space:nowrap">${sUsd(x.pnl)}</div></div>`).join("")}</div>`
-    : `<div class="card"><div class="empty" style="padding:16px">Ancora nessuna operazione chiusa.</div></div>`;
-}
-
-const SIG = {
-  CC: { t: "Cluster confermato", i: "target", c: "a" }, CONS: { t: "Consenso", i: "hands", c: "a" },
-  CONF: { t: "Conflitto", i: "bolt", c: "" }, REG: { t: "Inversione di regime", i: "compass", c: "a" },
-  COPY: { t: "Copy", i: "copy", c: "a" }, RISK: { t: "Rischio", i: "warn", c: "r" },
-};
-const SIG_F = [["tutti", "Tutti"], ["CC", "Cluster"], ["CONS", "Consenso"], ["CONF", "Conflitto"], ["REG", "Regime"], ["COPY", "Copy"], ["RISK", "Rischio"]];
-
-function chips(el, list, cur, on) {
-  el.innerHTML = list.map(([k, l]) => `<button class="chip" data-k="${k}" aria-pressed="${k === cur}">${l}</button>`).join("");
-  el.onclick = (e) => { const b = e.target.closest(".chip"); if (b) on(b.dataset.k); };
-}
-function byDay(items, row) {
-  let out = "", day = "", open = false;
-  for (const it of items) {
-    const d = dayLabel(it.t);
-    if (d !== day) { if (open) out += "</div>"; out += `<div class="day">${d}</div><div class="list">`; day = d; open = true; }
-    out += row(it);
-  }
-  return out + (open ? "</div>" : "");
-}
-
-function renderSignals() {
-  const all = S.data.segnali || [];
-  const fresh = all.filter((s) => Date.now() - s.t < 24 * 3600e3 && s.pr === "ALTA").length;
-  $("#bSig").textContent = fresh; $("#bSig").classList.toggle("on", fresh > 0);
-  chips($("#sigChips"), SIG_F, S.sigF, (k) => { S.sigF = k; renderSignals(); });
-  const list = all.filter((s) => S.sigF === "tutti" || s.type === S.sigF);
-  $("#sigList").innerHTML = list.length ? byDay(list, (s) => {
-    const m = SIG[s.type] || { t: s.type, i: "info", c: "" };
-    return `<div class="item"><div class="ico ${m.c}">${I[m.i]}</div>
-      <div class="body"><div class="l1">${m.t}${s.coin ? ` · ${esc(s.coin)}` : ""} ${s.pr === "ALTA" ? '<span class="tag hi">alta</span>' : '<span class="tag">media</span>'}</div>
-        <div class="l2">${esc(s.txt)}</div>${s.who ? `<div class="l3">${s.who.map(esc).join(" · ")}</div>` : ""}</div>
-      <time>${hhmm(s.t)}</time></div>`;
-  }) : `<div class="card"><div class="empty"><b>Nessun segnale</b>${S.data.direct ? "Collega il Worker per vedere lo storico." : "Niente in questo filtro negli ultimi 30 giorni."}</div></div>`;
-}
-
-const EV = { APERTURA: ["plus", "a"], AUMENTO: ["up", "a"], RIDUZIONE: ["down", ""], CHIUSURA: ["x", ""], INVERSIONE: ["flip", "a"] };
-const EV_F = [["tutti", "Tutti"], ["A", "Cluster"], ["B", "Lettura"], ["CHIUSURA", "Chiusure"]];
-function renderEvents() {
-  chips($("#evChips"), EV_F, S.evF, (k) => { S.evF = k; renderEvents(); });
-  const list = (S.data.eventi || []).filter((e) => S.evF === "tutti" || e.g === S.evF || e.type === S.evF).map((e) => ({ ...e, t: e.t1 }));
-  $("#evList").innerHTML = list.length ? byDay(list, (e) => {
-    const d = e.type === "CHIUSURA" ? sgn(e.start) : sgn(e.end);
-    const [ic, c] = EV[e.type] || ["info", ""];
-    const delta = e.end - e.start;
-    const l2 = e.type === "APERTURA" ? `${qty(e.end)} · ${usd(e.ntl)} @ ${px(e.vwap)}`
-      : e.type === "CHIUSURA" ? `${qty(e.start)} chiusi @ ${px(e.vwap)}`
-      : `${delta > 0 ? "+" : "−"}${qty(delta)} → ${qty(e.end)} · ${usd(e.ntl)} @ ${px(e.vwap)}`;
-    const l3 = e.type === "CHIUSURA" ? `PnL <span class="${tone(e.pnl)}">${sUsd(e.pnl)}</span>${e.dur ? " · " + dur(e.dur) : ""}`
-      : `leva ${lev(e.lev)} · ${pct(e.eqPct)} equity${e.nf > 1 ? ` · ${e.nf} blocchi` : ""}`;
-    return `<div class="item"><div class="ico ${c}">${I[ic]}</div>
-      <div class="body"><div class="l1">${e.type.charAt(0) + e.type.slice(1).toLowerCase()} ${dirChip(d)} ${esc(bare(e.coin))}${dexOf(e.coin) ? ` <span class="tag">${esc(dexOf(e.coin))}</span>` : ""}</div>
-        <div class="l2">${esc(e.n)}${e.g === "A" ? (e.confirmed ? ' · <span class="pos">confermato 2/3</span>' : " · singolo") : ""}</div>
-        <div class="l3">${l2}<br>${l3}</div></div>
-      <time>${hhmm(e.t1)}</time></div>`;
-  }) : `<div class="card"><div class="empty"><b>Nessun evento</b>${S.data.direct ? "Collega il Worker per vedere il registro." : "Quando un wallet si muove, compare qui."}</div></div>`;
-}
-
-function walletCard(w) {
-  const gross = w.pos.reduce((s, p) => s + p.ntl, 0);
-  return `<div class="card flush"><div class="whead">
-      <div class="between"><h3>${esc(w.n)}</h3><a class="tag" href="https://hyperdash.com/address/${w.a}" target="_blank" rel="noopener">${w.a.slice(0, 6)}…${w.a.slice(-4)}</a></div>
-      <div class="sub">${esc(w.note || "")}</div>
-      <div class="kpis"><div><small>Equity</small><b>${usd(w.eq)}</b></div><div><small>Esposizione</small><b>${usd(gross)}</b></div><div><small>Leva</small><b>${lev(w.eq ? gross / w.eq : 0)}</b></div></div>
-      ${spark(w.eqh)}
-    </div>
-    ${w.pos.length ? w.pos.map((p) => `<div class="prow">
+function renderNow(d) {
+  const w = W();
+  $("#oraTitle").textContent = w.n;
+  $("#oraLede").textContent = w.a;
+  const gross = d.pos.reduce((s, p) => s + p.ntl, 0);
+  const upnl = d.pos.reduce((s, p) => s + p.upnl, 0);
+  const net = d.pos.reduce((s, p) => s + Math.sign(p.sz) * p.ntl, 0);
+  $("#eqCard").innerHTML = `<div class="between"><span class="sub" style="margin:0">Equity</span>${d.pos.length ? dirChip(sgn(net)) : '<span class="tag">flat</span>'}</div>
+    <div class="big" style="margin-top:8px">${usd(d.eq)}</div>
+    <div class="sub">${d.spotUsd > 1 ? `${usd(d.perpEq)} margine perp + ${usd(d.spotUsd)} USDC spot` : "margine perp"}</div>
+    ${spark(d.eqHist)}
+    <div class="kpis"><div><small>Esposizione</small><b>${usd(gross)}</b></div>
+      <div><small>Leva effettiva</small><b>${lev(gross / (d.eq || 1))}</b></div>
+      <div><small>PnL aperto</small><b class="${tone(upnl)}">${sUsd(upnl)}</b></div></div>`;
+  $("#posN").textContent = d.pos.length ? d.pos.length + "" : "";
+  $("#posList").innerHTML = d.pos.length ? d.pos.map((p) => {
+    const tr = d.trades.find((t) => t.coin === p.coin && t.status === "aperto");
+    return `<div class="prow">
       <div class="c">${dirChip(sgn(p.sz))} ${esc(bare(p.coin))} ${dexTag(p.coin)}</div><div class="v">${usd(p.ntl)}</div>
-      <div class="d">${qty(p.sz)} @ ${px(p.entry)}${p.open ? ` · da ${dur(Date.now() - p.open.t)}${p.open.approx ? "+" : ""}` : ""}</div>
-      <div class="d r ${tone(p.upnl)}">${sUsd(p.upnl)}</div></div>`).join("")
-      : `<div class="prow"><div class="d">Nessuna posizione aperta</div></div>`}
-  </div>`;
+      <div class="d">${qty(p.sz)} @ ${px(p.entry)} → ${px(p.mark)}</div><div class="d r ${tone(p.upnl)}">${sUsd(p.upnl)}</div>
+      <div class="d">${pct(p.ntl / (d.eq || 1), 0)} equity${p.liq ? ` · liq ${px(p.liq)}` : ""}</div><div class="d r">${tr && !tr.partial ? "da " + dur(Date.now() - tr.t0) : ""}</div>
+    </div>`; }).join("") : `<div class="empty"><b>Nessuna posizione</b>Il wallet è flat in questo momento.</div>`;
+
+  const s = stats(d.trades);
+  $("#statCard").innerHTML = `<div class="between"><span class="sub" style="margin:0">Track record</span><span class="tag">${s.closed.length} trade chiusi</span></div>
+    <div class="big ${tone(s.tot)}" style="margin-top:8px">${sUsd(s.tot)}</div>
+    <div class="sub">PnL netto dei trade chiusi${d.fills.length ? ` dal ${dShort(d.fills[0].time)}` : ""}</div>
+    <div class="kpis k4"><div><small>Vincenti</small><b>${pct(s.win, 0)}</b></div><div><small>Durata media</small><b>${dur(s.avgDur)}</b></div>
+      <div><small>Leva media</small><b>${lev(s.avgLev)}</b></div><div><small>Ordini attesi</small><b>${d.ord.length}</b></div></div>`;
+  const last = d.trades.slice().reverse().slice(0, 5);
+  $("#lastTrades").innerHTML = last.length ? last.map((t) => `<div class="prow">
+      <div class="c">${dirChip(t.dir)} ${esc(bare(t.coin))} ${t.status === "aperto" ? '<span class="tag hi">aperto</span>' : ""}</div>
+      <div class="v ${tone(t.net)}">${sUsd(t.net)}</div>
+      <div class="d">${dShort(t.t0)} · ${dur(t.dur)}</div><div class="d r ${tone(t.roe)}">${sPct(t.roe)} equity</div></div>`).join("")
+    : `<div class="empty">Nessuna operazione nello storico.</div>`;
 }
-function renderRead() {
-  $("#readList").innerHTML = S.data.wallet.filter((w) => w.g === "B").map(liveWallet).map(walletCard).join("");
-  const live = S.data.archivioLive || [];
-  $("#archList").innerHTML = (S.data.archivio || ARCHIVE).map((w) => {
-    const l = live.find((x) => x.a === w.a);
-    return `<div class="prow" style="padding-left:0;padding-right:0"><div class="c">${esc(w.n)}</div>
-      <div class="v">${l ? usd(l.eq) : ""}</div><div class="d" style="grid-column:1/-1;font-family:var(--font)">${esc(w.note)}</div></div>`;
+
+function renderOrders(d) {
+  $("#bOrd").textContent = d.ord.length; $("#bOrd").classList.toggle("on", d.ord.length > 0);
+  if (!d.ord.length) {
+    $("#ordList").innerHTML = `<div class="card"><div class="empty"><b>Nessun ordine in attesa</b>Adesso ${esc(W().n)} non ha ordini nel book: entra ed esce a mercato, quindi le sue mosse si vedono solo quando succedono, nella scheda Operazioni.</div></div>`;
+    return;
+  }
+  const groups = {};
+  for (const o of d.ord) (groups[o.coin] ||= []).push(o);
+  $("#ordList").innerHTML = Object.entries(groups).map(([coin, list]) => {
+    const p = d.pos.find((x) => x.coin === coin);
+    const mark = p?.mark || +list[0].limitPx;
+    const pos = p?.sz || 0;
+    const rows = list.map((o) => {
+      const side = o.side === "B" ? 1 : -1, price = +(o.isTrigger ? o.triggerPx : o.limitPx), sz = +o.sz;
+      const reduces = o.reduceOnly || (pos && side !== sgn(pos));
+      const effect = reduces ? (sz >= Math.abs(pos) - 1e-9 ? "chiude" : "riduce") : pos ? "aumenta" : "apre";
+      return { o, side, price, sz, effect, reduces, dist: price / mark - 1 };
+    }).sort((a, b) => Math.abs(a.dist) - Math.abs(b.dist));
+    const span = Math.max(...rows.map((r) => Math.abs(r.dist)), .01);
+    return `<div class="sec"><span>${esc(bare(coin))}${dexOf(coin) ? ` · ${esc(dexOf(coin))}` : ""}</span><span class="m">prezzo ${px(mark)}${pos ? ` · ${pos > 0 ? "long" : "short"} ${qty(pos)}` : ""}</span></div>
+      <div class="card flush">${rows.map((r) => `<div class="prow">
+        <div class="c"><span class="tag ${r.reduces ? "" : "hi"}">${r.effect}</span> ${r.side > 0 ? "Compra" : "Vende"} ${qty(r.sz)}</div>
+        <div class="v">${px(r.price)}</div>
+        <div class="d">${esc(r.o.orderType)}${r.o.isPositionTpsl ? " · TP/SL" : ""} · ${usd(r.sz * r.price)}</div>
+        <div class="d r">${sPct(r.dist)} dal prezzo</div>
+        <div class="ladder" aria-hidden="true"><i style="left:50%;background:var(--t3)"></i><i style="left:${50 + r.dist / span * 48}%;background:${r.reduces ? "var(--t2)" : "var(--a)"}"></i></div>
+      </div>`).join("")}</div>`;
   }).join("");
 }
 
+const TF = [["tutte", "Tutte"], ["aperte", "Aperte"], ["vinte", "In utile"], ["perse", "In perdita"]];
+const COLS = [
+  ["t0", "Apertura"], ["coin", "Coin"], ["avgIn", "Entrata"], ["avgOut", "Uscita"], ["move", "Movimento"],
+  ["ntl", "Nozionale max"], ["lev", "Leva"], ["dur", "Durata"], ["net", "PnL netto"], ["roe", "% equity"],
+];
+function renderTrades(d) {
+  const s = stats(d.trades);
+  $("#tradeStats").innerHTML = `<div class="kpis k4" style="margin-top:0">
+    <div><small>PnL netto</small><b class="${tone(s.tot)}">${sUsd(s.tot)}</b></div>
+    <div><small>Trade chiusi</small><b>${s.closed.length}</b></div>
+    <div><small>Vincenti</small><b>${pct(s.win, 0)}</b></div>
+    <div><small>Migliore / peggiore</small><b><span class="pos">${s.best ? sPct(s.best.roe, 0) : "—"}</span> / <span class="${s.worst && s.worst.roe < 0 ? "neg" : ""}">${s.worst ? sPct(s.worst.roe, 0) : "—"}</span></b></div></div>`;
+  const coins = [...new Set(d.trades.map((t) => bare(t.coin)))];
+  const chips = [...TF, ...coins.map((c) => ["c:" + c, c])];
+  $("#tradeChips").innerHTML = chips.map(([k, l]) => `<button class="chip" data-k="${esc(k)}" aria-pressed="${k === S.tf}">${esc(l)}</button>`).join("");
+  let list = d.trades.filter((t) =>
+    S.tf === "tutte" || (S.tf === "aperte" && t.status === "aperto") || (S.tf === "vinte" && t.net > 0) ||
+    (S.tf === "perse" && t.net < 0) || (S.tf.startsWith("c:") && bare(t.coin) === S.tf.slice(2)));
+  const { k, d: dir } = S.sort;
+  list = list.slice().sort((a, b) => { const x = a[k] ?? -Infinity, y = b[k] ?? -Infinity; return (x > y ? 1 : x < y ? -1 : 0) * dir; });
+  if (!list.length) { $("#tradeTable").innerHTML = `<div class="card"><div class="empty"><b>Nessuna operazione</b>Niente in questo filtro.</div></div>`; return; }
+  const head = COLS.map(([key, l]) => `<th data-k="${key}" ${key === k ? `aria-sort="${dir > 0 ? "ascending" : "descending"}"` : ""}>${l}</th>`).join("");
+  const body = list.map((t) => {
+    const id = t.coin + t.t0, open = S.open.has(id);
+    return `<tr class="tr" data-id="${esc(id)}" aria-expanded="${open}">
+      <td><div class="cell-coin">${dirChip(t.dir, true)}<div>${dShort(t.t0)}<small>${new Date(t.t0).toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}</small></div></div></td>
+      <td>${esc(bare(t.coin))}${dexOf(t.coin) ? ` <span class="mut">${esc(dexOf(t.coin))}</span>` : ""}${t.status === "aperto" ? ' <span class="tag hi">aperto</span>' : ""}${t.partial ? ' <span class="tag">parziale</span>' : ""}</td>
+      <td>${t.avgIn ? px(t.avgIn) : "—"}</td>
+      <td>${t.avgOut ? px(t.avgOut) : t.mark ? `<span class="mut">${px(t.mark)}</span>` : "—"}</td>
+      <td class="${tone(t.move || 0)}">${t.move != null ? sPct(t.move) : "—"}</td>
+      <td>${usd(t.ntl)}</td>
+      <td>${lev(t.lev)}</td>
+      <td>${dur(t.dur)}</td>
+      <td class="${tone(t.net)}">${sUsd(t.net)}</td>
+      <td class="${tone(t.roe)}">${sPct(t.roe)}</td></tr>
+      ${open ? `<tr class="det"><td colspan="${COLS.length}"><div class="fills">${t.fills.map((f) =>
+        `<span>${dTime(f.t)}</span><b class="${f.k === "entra" ? "pos" : ""}">${f.k}</b><span>${qty(f.sz)} @ ${px(f.px)}</span><span>${usd(f.sz * f.px)}</span>`).join("")}</div>
+        <div class="sub fills" style="display:block;margin-top:8px;font-family:var(--font)">Equity all'apertura ${usd(t.eq0)} · commissioni ${usd(t.fees)}${t.partial ? " · aperto prima dell'inizio dello storico: entrata incompleta" : ""}</div></td></tr>` : ""}`;
+  }).join("");
+  $("#tradeTable").innerHTML = `<div class="tbl-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
+}
+$("#tradeChips").addEventListener("click", (e) => { const b = e.target.closest(".chip"); if (b) { S.tf = b.dataset.k; renderTrades(D()); } });
+$("#tradeTable").addEventListener("click", (e) => {
+  const th = e.target.closest("th");
+  if (th) { const k = th.dataset.k; S.sort = { k, d: S.sort.k === k ? -S.sort.d : -1 }; renderTrades(D()); return; }
+  const tr = e.target.closest("tr.tr");
+  if (tr) { const id = tr.dataset.id; S.open.has(id) ? S.open.delete(id) : S.open.add(id); renderTrades(D()); }
+});
+
+/* backtest: controlli e risultati */
+$$("#btCtl .segm").forEach((g) => g.addEventListener("click", (e) => {
+  const b = e.target.closest("button"); if (!b) return;
+  g.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+  S.bt[g.dataset.k] = +b.dataset.v; runBacktest();
+}));
+$("#btCap").addEventListener("change", runBacktest);
+
+let btSeq = 0;
+async function runBacktest() {
+  const d = D(); if (!d) return;
+  const seq = ++btSeq;
+  const capital = Math.max(100, +String($("#btCap").value).replace(/\D/g, "") || 50000);
+  if (!$("#btOut").firstElementChild) $("#btOut").innerHTML = `<div class="card"><div class="sk" style="width:50%"></div><div class="sk" style="height:180px;margin-top:14px"></div></div>`;
+  let r;
+  try { r = await backtest(d, { capital, ...S.bt }); }
+  catch (err) { if (seq === btSeq) $("#btOut").innerHTML = `<div class="card"><div class="empty"><b>Backtest non riuscito</b>${esc(err.message)}</div></div>`; return; }
+  if (seq !== btSeq) return;
+  if (!r) { $("#btOut").innerHTML = `<div class="card"><div class="empty"><b>Niente da simulare</b>Nessun trade completo nello storico.</div></div>`; return; }
+  const dd = r.maxDD;
+  const verdict = r.ret > 0 && dd < .25 ? "Copiandolo avresti guadagnato." : r.ret > 0 ? "Avresti guadagnato, ma con cali pesanti." : "Copiandolo avresti perso.";
+  const fl = { 0.25: "un quarto della sua", 0.5: "metà della sua", 1: "uguale alla sua" }[S.bt.factor];
+  $("#btOut").innerHTML = `
+    <div class="card">
+      <div class="verdict">${verdict}</div>
+      <div class="sub">Dal ${dShort(r.from)} · ${r.n} trade copiati · leva ${fl} · ritardo ${S.bt.delay ? dur(S.bt.delay) : "nessuno"} · stop ${S.bt.stop ? pct(S.bt.stop, 0) : "nessuno"}</div>
+      <div class="big ${tone(r.ret)}" style="margin-top:16px">${usd(r.final)}</div>
+      <div class="sub">${sPct(r.ret)} su ${usd(capital)}</div>
+      <div class="kpis k4">
+        <div><small>Calo massimo</small><b class="${dd > .1 ? "neg" : ""}">−${pct(dd)}</b></div>
+        <div><small>Trade vincenti</small><b>${pct(r.win, 0)}</b></div>
+        <div><small>Stop scattati</small><b>${r.stops}</b></div>
+        <div><small>Lui, stessa scala</small><b class="${tone(r.theirRet)}">${sPct(r.theirRet, 0)}</b></div>
+      </div>
+      <div class="chart" id="btChart"></div>
+      <div class="legend"><span><i style="background:var(--a)"></i>Tu</span><span><i style="background:var(--t3)"></i>Lui, alla sua leva e senza ritardo</span></div>
+      ${r.skipped ? `<div class="callout">${I.info}<div>${r.skipped} ${r.skipped === 1 ? "trade escluso: era" : "trade esclusi: erano"} già aperti prima dell'inizio dello storico, quindi l'entrata non è nota.</div></div>` : ""}
+      ${r.stops ? `<div class="callout risk">${I.warn}<div>Lo stop è scattato ${r.stops} ${r.stops === 1 ? "volta" : "volte"}: in quei trade sei uscito prima di lui. Cambia stop o leva per vedere la differenza.</div></div>` : ""}
+    </div>
+    <div class="sec"><span>Trade per trade</span><span class="m">${r.nClosed} chiusi</span></div>
+    <div class="tbl-wrap"><table><thead><tr><th>Apertura</th><th>Coin</th><th>Tua entrata</th><th>Tua uscita</th><th>Nozionale</th><th>Leva</th><th>Tuo PnL</th><th>Tu %</th><th>Lui %</th><th>Esito</th></tr></thead><tbody>
+      ${r.rows.slice().reverse().map((x) => `<tr>
+        <td><div class="cell-coin">${dirChip(x.t.dir, true)}<div>${dShort(x.t.t0)}</div></div></td>
+        <td>${esc(bare(x.t.coin))}</td><td>${px(x.inPx)}</td><td>${x.outPx ? px(x.outPx) : "—"}</td>
+        <td>${usd(x.maxNtl)}</td><td>${lev(x.lev)}</td>
+        <td class="${tone(x.net)}">${sUsd(x.net)}</td><td class="${tone(x.roe)}">${sPct(x.roe)}</td><td class="${tone(x.t.roe)}">${sPct(x.t.roe)}</td>
+        <td>${x.stopped ? '<span class="tag risk">stop</span>' : x.open ? '<span class="tag hi">aperto</span>' : '<span class="tag">come lui</span>'}</td></tr>`).join("")}
+    </tbody></table></div>
+    <div class="card" style="margin-top:12px"><div class="sub" style="margin:0;line-height:1.55">
+      <b style="color:var(--t1)">Come funziona.</b> Ogni entrata e uscita di ${esc(W().n)} viene ripetuta in proporzione: la tua equity diviso la sua al momento dell'apertura, per il fattore di leva scelto.
+      Con un ritardo il prezzo è quello di mercato dopo il ritardo, stimato dalle candele orarie. Si contano commissioni (0,045%) e slittamento (0,05%) per lato; il funding no.
+      Lo stop chiude il trade quando la perdita supera la soglia sul capitale di quel momento, controllata sui minimi e massimi orari. Con pochi trade il risultato è un'indicazione, non una promessa.</div></div>`;
+  drawChart($("#btChart"), r.curve, r.theirCurve);
+}
+
+function drawChart(el, mine, theirs) {
+  if (!mine.length) return;
+  const VW = 600, H = 220, pad = { t: 10, b: 22 };
+  const t0 = mine[0][0], t1 = mine[mine.length - 1][0];
+  const step = Math.max(1, Math.floor(mine.length / 400)); // un punto all'ora: ne disegno al massimo ~400
+  const pts = mine.filter((_, i) => i % step === 0 || i === mine.length - 1);
+  const all = [...pts.map((p) => p[1]), ...theirs.map((p) => p[1])];
+  const lo = Math.min(...all), hi = Math.max(...all), r = hi - lo || 1;
+  const x = (t) => (Math.min(Math.max(t, t0), t1) - t0) / (t1 - t0 || 1) * VW;
+  const y = (v) => pad.t + (1 - (v - lo) / r) * (H - pad.t - pad.b);
+  const line = (arr, stepped) => arr.map((p, i) => !i ? `M${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`
+    : stepped ? `H${x(p[0]).toFixed(1)}V${y(p[1]).toFixed(1)}` : `L${x(p[0]).toFixed(1)},${y(p[1]).toFixed(1)}`).join("");
+  const base = y(mine[0][1]);
+  el.innerHTML = `<svg viewBox="0 0 ${VW} ${H}" preserveAspectRatio="none" role="img" aria-label="Equity simulata">
+    <line x1="0" x2="${VW}" y1="${base}" y2="${base}" stroke="var(--sep)" stroke-dasharray="3 4" vector-effect="non-scaling-stroke"/>
+    <path d="${line(theirs, true)}" fill="none" stroke="var(--t3)" stroke-width="1.5" vector-effect="non-scaling-stroke"/>
+    <path d="${line(pts)}" fill="none" stroke="var(--a)" stroke-width="2.2" vector-effect="non-scaling-stroke" stroke-linejoin="round"/>
+    <line class="cx" y1="0" y2="${H - pad.b}" stroke="var(--t3)" stroke-width="1" vector-effect="non-scaling-stroke" opacity="0"/>
+  </svg><div class="tip"></div>
+  <div class="between m" style="font-size:11px;color:var(--t3);margin-top:2px"><span>${dShort(t0)}</span><span>${dShort(t1)}</span></div>`;
+  const svg = el.querySelector("svg"), tip = el.querySelector(".tip"), cx = el.querySelector(".cx");
+  const move = (e) => {
+    const b = svg.getBoundingClientRect(), fx = Math.min(Math.max((e.clientX - b.left) / b.width, 0), 1);
+    const t = t0 + fx * (t1 - t0);
+    let i = pts.findIndex((p) => p[0] >= t); if (i < 0) i = pts.length - 1;
+    const th = theirs.filter((p) => p[0] <= t).pop() || theirs[0];
+    cx.setAttribute("x1", x(pts[i][0])); cx.setAttribute("x2", x(pts[i][0])); cx.setAttribute("opacity", 1);
+    tip.innerHTML = `${dShort(pts[i][0])}<br><span class="pos">Tu ${usd(pts[i][1])}</span><br><span class="mut">Lui ${usd(th[1])}</span>`;
+    tip.style.opacity = 1; tip.style.left = Math.min(Math.max(fx * b.width - 60, 0), b.width - 130) + "px";
+  };
+  svg.addEventListener("pointermove", move);
+  svg.addEventListener("pointerdown", move);
+  svg.addEventListener("pointerleave", () => { tip.style.opacity = 0; cx.setAttribute("opacity", 0); });
+}
+
 /* ═════════ NAVIGAZIONE ═════════ */
-const TITLES = { cluster: "Cluster", copy: "Copy", segnali: "Segnali", eventi: "Eventi", lettura: "Lettura" };
 function show(v, push = true) {
-  if (!TITLES[v]) v = "cluster";
+  if (!["ora", "ordini", "trade", "bt"].includes(v)) v = "ora";
   S.view = v;
   $$(".tab").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.v === v)));
   $$(".view").forEach((s) => s.classList.toggle("on", s.id === "v-" + v));
-  $("#mini").textContent = TITLES[v];
   if (push) history.replaceState(null, "", "#" + v);
   window.scrollTo(0, 0);
-  onScroll();
+  if (v === "bt") { $("#btOut").innerHTML = ""; runBacktest(); }
 }
 $$(".tab").forEach((t) => t.addEventListener("click", () => show(t.dataset.v)));
 addEventListener("hashchange", () => show(location.hash.slice(1), false));
-function onScroll() { $("#top").classList.toggle("scrolled", window.scrollY > 44); }
-addEventListener("scroll", onScroll, { passive: true });
-$("#status").addEventListener("click", load);
 
-/* ═════════ SHEET: molla critica, trascinabile, interrompibile ═════════ */
-const sheet = $("#sheet"), scrim = $("#scrim");
-let sy = 0, sv = 0, raf = 0, sheetOpen = false;
-const sheetH = () => sheet.getBoundingClientRect().height + 40;
-function paint() {
-  sheet.style.transform = `translateY(${sy}px)`;
-  const p = Math.max(0, 1 - sy / sheetH());
-  scrim.style.opacity = p; scrim.style.pointerEvents = sheetOpen ? "auto" : "none";
+let loading = null;
+async function load(light = false) {
+  const w = W();
+  if (loading === w.a) return;
+  loading = w.a;
+  if (!S.data[w.a]) {
+    for (const id of ["#posList", "#lastTrades", "#tradeTable", "#ordList", "#btOut"]) $(id).innerHTML = `<div class="card"><div class="sk"></div><div class="sk" style="margin-top:10px;width:70%"></div></div>`;
+    $("#eqCard").innerHTML = `<div class="sk" style="width:40%"></div><div class="sk" style="width:70%;height:34px;margin-top:12px"></div>`;
+    $("#statCard").innerHTML = `<div class="sk"></div>`;
+  }
+  try { await loadWallet(w, light && !!S.data[w.a]); }
+  catch (e) { if (!S.data[w.a] && W() === w) $("#eqCard").innerHTML = `<div class="empty"><b>Hyperliquid non risponde</b>Riprovo tra poco.</div>`; }
+  if (loading === w.a) loading = null;
+  if (W() === w) render();
 }
-// molla criticamente smorzata (damping 1, response .35s): parte dal valore e dalla velocità correnti
+function tickAgo() {
+  const d = D(), s = d ? Math.round((Date.now() - d.t) / 1000) : null;
+  $("#ago").textContent = s == null ? "" : s < 60 ? s + "s fa" : Math.round(s / 60) + "m fa";
+  $("#dot").classList.toggle("off", s == null || s > 120);
+}
+$("#refresh").addEventListener("click", () => load(true));
+
+/* ═════════ SHEET IMPOSTAZIONI (molla critica, trascinabile) ═════════ */
+const sheet = $("#sheet"), scrim = $("#scrim");
+let sy = 0, raf = 0, sheetOpen = false;
+const sheetH = () => sheet.getBoundingClientRect().height + 40;
+function paint() { sheet.style.transform = `translateY(${sy}px)`; scrim.style.opacity = Math.max(0, 1 - sy / sheetH()); scrim.style.pointerEvents = sheetOpen ? "auto" : "none"; }
 function springTo(target, v0 = 0, response = .35) {
   cancelAnimationFrame(raf);
-  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { sy = target; sv = 0; paint(); return; }
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) { sy = target; paint(); return; }
   const w = 2 * Math.PI / response, x0 = sy - target, t0 = performance.now();
   const step = (now) => {
     const t = (now - t0) / 1000, e = Math.exp(-w * t);
     sy = target + (x0 + (v0 + w * x0) * t) * e;
-    sv = (v0 - w * (v0 + w * x0) * t) * e;
+    const v = (v0 - w * (v0 + w * x0) * t) * e;
     paint();
-    if (Math.abs(sy - target) > .4 || Math.abs(sv) > 4) raf = requestAnimationFrame(step); else { sy = target; paint(); }
+    if (Math.abs(sy - target) > .4 || Math.abs(v) > 4) raf = requestAnimationFrame(step); else { sy = target; paint(); }
   };
   raf = requestAnimationFrame(step);
 }
 function openSheet() {
-  $("#wurl").value = worker;
+  $("#wEdit").innerHTML = WALLETS.map((w, i) => `<div class="wedit"><input class="inp" data-i="${i}" data-f="n" value="${esc(w.n)}" aria-label="Nome ${i + 1}" autocapitalize="words" style="font-family:var(--font)">
+    <input class="inp" data-i="${i}" data-f="a" value="${esc(w.a)}" aria-label="Indirizzo ${i + 1}" autocapitalize="none" autocorrect="off" spellcheck="false"></div>`).join("") +
+    `<div class="sub">Nome e indirizzo dei tre wallet. Restano salvati in questo browser.</div>`;
   sheetOpen = true;
   if (!sheet.dataset.init) { sy = sheetH(); sheet.dataset.init = 1; }
   springTo(0);
@@ -818,19 +910,13 @@ function closeSheet(v0 = 0) { sheetOpen = false; scrim.style.pointerEvents = "no
 $("#openSet").addEventListener("click", openSheet);
 scrim.addEventListener("click", () => closeSheet());
 addEventListener("keydown", (e) => { if (e.key === "Escape" && sheetOpen) closeSheet(); });
-
-// trascinamento 1:1 dalla maniglia, con proiezione del momento al rilascio
 (() => {
   const g = $("#grab"); let start = 0, base = 0, hist = [];
-  g.addEventListener("pointerdown", (e) => {
-    cancelAnimationFrame(raf); g.setPointerCapture(e.pointerId);
-    start = e.clientY; base = sy; hist = [[e.timeStamp, e.clientY]];
-  });
+  g.addEventListener("pointerdown", (e) => { cancelAnimationFrame(raf); g.setPointerCapture(e.pointerId); start = e.clientY; base = sy; hist = [[e.timeStamp, e.clientY]]; });
   g.addEventListener("pointermove", (e) => {
     if (!g.hasPointerCapture(e.pointerId)) return;
-    const d = e.clientY - start;
-    // sopra la posizione aperta resiste come un elastico
-    sy = base + d < 0 ? -(Math.abs(base + d) * 40) / (40 + Math.abs(base + d)) : base + d;
+    const d = base + e.clientY - start;
+    sy = d < 0 ? -(Math.abs(d) * 40) / (40 + Math.abs(d)) : d; // elastico sopra la posizione aperta
     paint(); hist.push([e.timeStamp, e.clientY]); if (hist.length > 6) hist.shift();
   });
   const end = (e) => {
@@ -838,29 +924,29 @@ addEventListener("keydown", (e) => { if (e.key === "Escape" && sheetOpen) closeS
     g.releasePointerCapture(e.pointerId);
     const [t0, y0] = hist[0], [t1, y1] = hist[hist.length - 1];
     const v = t1 > t0 ? (y1 - y0) / (t1 - t0) * 1000 : 0;
-    const projected = sy + (v / 1000) * .998 / (1 - .998);
+    const projected = sy + (v / 1000) * .998 / (1 - .998); // proiezione del momento
     if (projected > sheetH() * .45) closeSheet(v); else springTo(0, v);
   };
   g.addEventListener("pointerup", end); g.addEventListener("pointercancel", end);
 })();
-
-$("#themeSeg").addEventListener("click", (e) => {
-  const b = e.target.closest("button"); if (!b) return;
-  theme = b.dataset.t; store.set("wd.theme", theme); applyTheme(theme);
-});
+$("#themeSeg").addEventListener("click", (e) => { const b = e.target.closest("button"); if (!b) return; theme = b.dataset.t; store.set("wd.theme", theme); applyTheme(theme); });
 $("#saveSet").addEventListener("click", () => {
-  const v = $("#wurl").value.trim().replace(/\/+$/, "");
-  if (v !== worker) { worker = v; store.set("wd.worker", v); load(); }
+  const next = WALLETS.map((w) => ({ ...w }));
+  $$("#wEdit input").forEach((i) => { next[+i.dataset.i][i.dataset.f] = i.value.trim(); });
+  if (next.every((w) => /^0x[0-9a-fA-F]{40}$/.test(w.a))) {
+    const clean = next.map((w) => ({ a: w.a.toLowerCase(), n: w.n || w.a.slice(0, 6) }));
+    if (JSON.stringify(clean) !== JSON.stringify(WALLETS)) { WALLETS = clean; store.set("wd.wallets", WALLETS); renderWallets(); load(); }
+  }
   closeSheet();
 });
 
 /* ═════════ AVVIO ═════════ */
-show(location.hash.slice(1) || "cluster", false);
+renderWallets();
+show(location.hash.slice(1) || "ora", false);
 load();
-setInterval(() => { if (!document.hidden) load(); }, 30e3);
-setInterval(async () => { if (!document.hidden && S.data) { await refreshMids(); render(); } }, 15e3);
+setInterval(() => { if (!document.hidden) load(true); }, 30e3);
 setInterval(tickAgo, 1e3);
-document.addEventListener("visibilitychange", () => { if (!document.hidden && Date.now() - S.t > 20e3) load(); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) load(true); });
 </script>
 </body>
 </html>

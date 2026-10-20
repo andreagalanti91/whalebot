@@ -1,8 +1,8 @@
 # Whale Desk v13
 
 - `worker.js` — Worker Cloudflare `whale-desk`: cron ogni minuto, alert Telegram, segnali combinati, copy virtuale. Stato in KV, chiave `s13`.
-- `dashboard/index.html` — dashboard (Netlify `signalgala`), file unico, tema chiaro/scuro.
-- `_v12/` — copia della versione precedente (worker e dashboard).
+- `dashboard/index.html` — dashboard: 3 wallet, posizioni, ordini in attesa, tabella dei trade, backtest del copy. Legge direttamente da Hyperliquid, file unico, tema chiaro/scuro.
+- `_v12/`, `_v13/` — versioni precedenti.
 
 ## Deploy
 
