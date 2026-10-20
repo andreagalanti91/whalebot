@@ -1,0 +1,13 @@
+name = "whale-desk"
+main = "worker.js"
+compatibility_date = "2026-01-01"
+
+# Il cron: ogni minuto. Cloudflare lo esegue anche se nessuno visita il sito.
+[triggers]
+crons = ["* * * * *"]
+
+# Sostituisci id con quello che ti stampa il comando:
+#   npx wrangler kv namespace create KV
+[[kv_namespaces]]
+binding = "KV"
+id = "929efbb9223b49829fca7e04475fd80b"
