@@ -304,8 +304,8 @@ footer{font-size:12px;color:var(--t3);text-align:center;margin-top:32px;line-hei
 const HL = "https://api.hyperliquid.xyz/info";
 const DEFAULT_WALLETS = [
   { a: "0x237152b038d88f4156a0cd71090462de7e3f0883", n: "Cluster-1" },
-  { a: "0xc7290b4b308431a985fa9e3e8a335c2f7650517c", n: "Ribassista" },
-  { a: "0x9c16bc8f1104e4d2f72267eb981fa12de7cc4a6f", n: "Inversore" },
+  { a: "0x51f3a19c1dfd8d7fe670e43ce0f66648789c8b34", n: "Swing HYPE" },
+  { a: "0xbac48231e71d5e24735d3cb6a26e597b13062979", n: "Swing Major" },
 ];
 const FEE = 0.00045, SLIP = 0.0005; // taker Hyperliquid + slittamento stimato, per lato
 const STABLES = new Set(["USDC", "USDT0", "USDH", "USDE", "USDT"]);
@@ -358,7 +358,7 @@ applyTheme(theme);
 mqDark.addEventListener?.("change", () => applyTheme(theme));
 
 /* ═════════ STATO ═════════ */
-let WALLETS = store.get("wd.wallets", DEFAULT_WALLETS);
+let WALLETS = store.get("wd.wallets.v2", DEFAULT_WALLETS);
 const S = { w: Math.min(store.get("wd.sel", 0), WALLETS.length - 1), view: "ora", data: {}, candles: {}, tf: "tutte", sort: { k: "t0", d: -1 },
   bt: { factor: 0.5, delay: 3600000, stop: 0.1 }, open: new Set() };
 let DEXS = null;
@@ -935,7 +935,7 @@ $("#saveSet").addEventListener("click", () => {
   $$("#wEdit input").forEach((i) => { next[+i.dataset.i][i.dataset.f] = i.value.trim(); });
   if (next.every((w) => /^0x[0-9a-fA-F]{40}$/.test(w.a))) {
     const clean = next.map((w) => ({ a: w.a.toLowerCase(), n: w.n || w.a.slice(0, 6) }));
-    if (JSON.stringify(clean) !== JSON.stringify(WALLETS)) { WALLETS = clean; store.set("wd.wallets", WALLETS); renderWallets(); load(); }
+    if (JSON.stringify(clean) !== JSON.stringify(WALLETS)) { WALLETS = clean; store.set("wd.wallets.v2", WALLETS); renderWallets(); load(); }
   }
   closeSheet();
 });
