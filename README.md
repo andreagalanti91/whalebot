@@ -18,7 +18,7 @@ Segreti già presenti: `TG_TOKEN`, `TG_CHAT`, `ADMIN_KEY`. Dopo il deploy:
 
 Primo avvio: il Worker registra lo stato senza mandare alert, e per ~15 minuti (il tempo di scansionare tutti i DEX HIP-3) registra consenso/conflitto in silenzio.
 
-Dashboard: imposta `DEFAULT_WORKER` in `dashboard/index.html` con l'URL `https://whale-desk.<sottodominio>.workers.dev`, oppure inseriscilo dall'icona impostazioni. Poi carica la cartella `dashboard/` su Netlify.
+Dashboard pubblica: https://whalebot.pages.dev (Cloudflare Pages, progetto `whalebot`). Worker: https://whale-desk.square-shape-0876.workers.dev
 
 ## Limiti del piano free di Workers
 
