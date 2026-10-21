@@ -302,10 +302,12 @@ footer{font-size:12px;color:var(--t3);text-align:center;margin-top:32px;line-hei
 "use strict";
 /* ═════════ CONFIG ═════════ */
 const HL = "https://api.hyperliquid.xyz/info";
+// bt: regole di copy di partenza nel backtest. I due nuovi tengono le posizioni durante cali forti:
+// copiati a metà leva con stop al 10% escono prima del rimbalzo, a un quarto con stop al 20% no.
 const DEFAULT_WALLETS = [
-  { a: "0x237152b038d88f4156a0cd71090462de7e3f0883", n: "Cluster-1" },
-  { a: "0x51f3a19c1dfd8d7fe670e43ce0f66648789c8b34", n: "Swing HYPE" },
-  { a: "0xbac48231e71d5e24735d3cb6a26e597b13062979", n: "Swing Major" },
+  { a: "0x237152b038d88f4156a0cd71090462de7e3f0883", n: "Cluster-1", bt: { factor: 0.5, stop: 0.1 } },
+  { a: "0xbd334a55db91617545e8d1b09941e036ad8e4200", n: "Petroliere", bt: { factor: 0.25, stop: 0.2 } },
+  { a: "0x2d99fe0f36c1aebd28a1a2c0e82e8ca13c2ea351", n: "Rotatore", bt: { factor: 0.25, stop: 0.2 } },
 ];
 const FEE = 0.00045, SLIP = 0.0005; // taker Hyperliquid + slittamento stimato, per lato
 const STABLES = new Set(["USDC", "USDT0", "USDH", "USDE", "USDT"]);
@@ -358,8 +360,8 @@ applyTheme(theme);
 mqDark.addEventListener?.("change", () => applyTheme(theme));
 
 /* ═════════ STATO ═════════ */
-let WALLETS = store.get("wd.wallets.v2", DEFAULT_WALLETS);
-const S = { w: Math.min(store.get("wd.sel", 0), WALLETS.length - 1), view: "ora", data: {}, candles: {}, tf: "tutte", sort: { k: "t0", d: -1 },
+let WALLETS = store.get("wd.wallets.v3", DEFAULT_WALLETS);
+const S = { w: Math.min(store.get("wd.sel3", 0), WALLETS.length - 1), view: "ora", data: {}, candles: {}, tf: "tutte", sort: { k: "t0", d: -1 },
   bt: { factor: 0.5, delay: 3600000, stop: 0.1 }, open: new Set() };
 let DEXS = null;
 
@@ -383,13 +385,16 @@ async function refreshFills(w, old) {
 
 async function loadWallet(w, light = false) {
   DEXS ||= (await post({ type: "perpDexs" }).catch(() => [null])).filter(Boolean).map((d) => d.name);
-  const dexs = ["", ...DEXS];
-  const q = (type, d) => post(d ? { type, user: w.a, dex: d } : { type, user: w.a }).catch(() => null);
   const prev = S.data[w.a];
+  // aggiornamento leggero: solo i DEX dove ha posizioni od ordini; giro completo ogni 5 minuti (limite di richieste di Hyperliquid)
+  const full = !light || !prev || Date.now() - (prev.fullAt || 0) > 5 * 60e3;
+  const used = prev ? [...new Set([...prev.pos, ...prev.ord].map((x) => dexOf(x.coin)).filter(Boolean))] : [];
+  const dexs = full ? ["", ...DEXS] : ["", ...used];
+  const q = (type, d) => post(d ? { type, user: w.a, dex: d } : { type, user: w.a }).catch(() => null);
   const [states, orders, spot, port, fills] = await Promise.all([
     Promise.all(dexs.map((d) => q("clearinghouseState", d))),
     Promise.all(dexs.map((d) => q("frontendOpenOrders", d))),
-    q("spotClearinghouseState"),
+    full || !prev ? q("spotClearinghouseState") : { balances: [{ coin: "USDC", total: prev.spotUsd }] },
     light && prev ? prev.port : q("portfolio"),
     light && prev ? refreshFills(w, prev.fills) : allFills(w.a),
   ]);
@@ -407,7 +412,7 @@ async function loadWallet(w, light = false) {
   const ord = orders.flat().filter(Boolean);
   const eqHist = (port?.find?.(([k]) => k === "allTime")?.[1]?.accountValueHistory || []).map(([t, v]) => [t, +v]).filter((x) => x[1] > 0);
   pos.sort((x, y) => y.ntl - x.ntl);
-  const d = { t: Date.now(), eq: perpEq + spotUsd, perpEq, spotUsd, pos, ord, port, eqHist, fills };
+  const d = { t: Date.now(), fullAt: full ? Date.now() : prev.fullAt, eq: perpEq + spotUsd, perpEq, spotUsd, pos, ord, port, eqHist, fills };
   d.trades = buildTrades(d);
   S.data[w.a] = d;
   return d;
@@ -607,9 +612,15 @@ function renderWallets() {
 }
 $("#wallets").addEventListener("click", (e) => {
   const b = e.target.closest("button"); if (!b || +b.dataset.i === S.w) return;
-  S.w = +b.dataset.i; store.set("wd.sel", S.w); S.open.clear(); S.tf = "tutte"; renderWallets();
+  S.w = +b.dataset.i; store.set("wd.sel3", S.w); S.open.clear(); S.tf = "tutte"; renderWallets(); applyBtDefaults();
   if (D()) render(); load(!!D());
 });
+
+function applyBtDefaults() {
+  const b = W().bt || { factor: 0.5, stop: 0.1 };
+  S.bt.factor = b.factor; S.bt.stop = b.stop;
+  $$("#btCtl .segm").forEach((g) => g.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(+x.dataset.v === S.bt[g.dataset.k]))));
+}
 
 function render() {
   const d = D();
@@ -934,17 +945,18 @@ $("#saveSet").addEventListener("click", () => {
   const next = WALLETS.map((w) => ({ ...w }));
   $$("#wEdit input").forEach((i) => { next[+i.dataset.i][i.dataset.f] = i.value.trim(); });
   if (next.every((w) => /^0x[0-9a-fA-F]{40}$/.test(w.a))) {
-    const clean = next.map((w) => ({ a: w.a.toLowerCase(), n: w.n || w.a.slice(0, 6) }));
-    if (JSON.stringify(clean) !== JSON.stringify(WALLETS)) { WALLETS = clean; store.set("wd.wallets.v2", WALLETS); renderWallets(); load(); }
+    const clean = next.map((w) => ({ ...w, a: w.a.toLowerCase(), n: w.n || w.a.slice(0, 6) }));
+    if (JSON.stringify(clean) !== JSON.stringify(WALLETS)) { WALLETS = clean; store.set("wd.wallets.v3", WALLETS); renderWallets(); load(); }
   }
   closeSheet();
 });
 
 /* ═════════ AVVIO ═════════ */
 renderWallets();
+applyBtDefaults();
 show(location.hash.slice(1) || "ora", false);
 load();
-setInterval(() => { if (!document.hidden) load(true); }, 30e3);
+setInterval(() => { if (!document.hidden) load(true); }, 60e3);
 setInterval(tickAgo, 1e3);
 document.addEventListener("visibilitychange", () => { if (!document.hidden) load(true); });
 </script>

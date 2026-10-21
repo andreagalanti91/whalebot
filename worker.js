@@ -16,7 +16,11 @@ const WALLETS = [
   // Gruppo B — Lettura (READ ONLY)
   { a: "0xc7290b4b308431a985fa9e3e8a335c2f7650517c", n: "Ribassista", g: "B", bear: true, regime: true, note: "Short di lungo periodo su BTC/ETH/HYPE e HIP-3" },
   { a: "0x9c16bc8f1104e4d2f72267eb981fa12de7cc4a6f", n: "Inversore", g: "B", regime: true, note: "Rare inversioni su BTC · SOL ad alta leva: non copiare" },
-  { a: "0x10e14ba2d77263543be1bdb2851b0933ddf4f4bd", n: "Macro", g: "B", note: "Indici e materie prime HIP-3" },
+  // Gruppo C — Copy diretto: trader indipendenti scelti da Hyperdash con profilo simile a Cluster-1
+  // (win rate alto, swing di più giorni, trade da milioni). Tengono le posizioni durante cali forti:
+  // nel backtest funzionano a un quarto della loro leva con stop al 20%, non a metà con stop al 10%.
+  { a: "0xbd334a55db91617545e8d1b09941e036ad8e4200", n: "Petroliere", g: "C", factor: 0.25, stop: 0.2, note: "HYPE e petrolio HIP-3 · 88% vincenti · 17 giorni" },
+  { a: "0x2d99fe0f36c1aebd28a1a2c0e82e8ca13c2ea351", n: "Rotatore", g: "C", factor: 0.25, stop: 0.2, note: "BTC e alt · 79% vincenti · 9 giorni" },
 ];
 
 // Wallet della v12, fuori dagli alert: restano visibili in dashboard come archivio.
@@ -24,6 +28,7 @@ const ARCHIVE = [
   { a: "0x325edd95bb016c36027ce3b9f7595af7094a9564", n: "Metronomo", note: "Diventato market maker: non più leggibile" },
   { a: "0xac26cf5f3c46b5e102048c65b977d2551b72a9c7", n: "Orologiaio", note: "Edge spento, fermo da mesi" },
   { a: "0x8fc7c0442e582bca195978c5a4fdec2e7c5bb0f7", n: "Ribassista storico", note: "Sostituito dal nuovo Ribassista" },
+  { a: "0x10e14ba2d77263543be1bdb2851b0933ddf4f4bd", n: "Macro", note: "Tolto per lasciare spazio al Gruppo C" },
 ];
 
 const CAPITAL = 50_000;        // capitale dedicato al copy
@@ -39,6 +44,7 @@ const CONFIRM_MS = 30 * 60e3;  // finestra per la conferma 2/3 del Cluster
 const REGIME_AGE = 30 * 864e5; // posizioni "di regime": aperte da oltre 30 giorni
 const KEEP_MS = 30 * 864e5;    // storico eventi e segnali: 30 giorni
 const MIN_NTL = 1_000;         // eventi sotto questo nozionale: registrati, non notificati
+const SOLO_MIN = 1_000_000;    // Gruppo C: si copia un'entrata solo da 1M $ di nozionale in su
 const SIG_NTL = 10_000;        // posizioni sotto questo nozionale non contano per consenso/conflitto
 const SWEEP = 5;               // coppie wallet×DEX HIP-3 riscansionate a ogni ciclo
 const SUB_BUDGET = 44;         // il piano free di Workers concede 50 subrequest per invocazione
@@ -68,6 +74,9 @@ const bareCoin = (c) => { const i = c.indexOf(":"); return i < 0 ? c : c.slice(i
 const sgn = (x) => (x > 0 ? 1 : x < 0 ? -1 : 0);
 const D = (d) => (d > 0 ? "LONG" : "SHORT");
 const byAddr = Object.fromEntries(WALLETS.map((w) => [w.a, w]));
+const byName = Object.fromEntries(WALLETS.map((w) => [w.n, w]));
+// regole di copy per fonte: il Cluster usa i valori generali, i wallet del Gruppo C i propri
+const rules = (src) => ({ factor: byName[src]?.factor ?? COPY_FACTOR, stop: byName[src]?.stop ?? STOP });
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 
 // numeri all'italiana senza dipendere dall'ICU del runtime
@@ -237,6 +246,7 @@ function enrich(st, e) {
   e.quiet = Math.max(Math.abs(e.start), Math.abs(e.end)) * e.vwap < MIN_NTL;
 }
 
+const GROUP = { A: "Cluster", B: "Lettura", C: "Copy" };
 const ICON = { APERTURA: "🟢", AUMENTO: "🔼", RIDUZIONE: "🔽", CHIUSURA: "⚪️", INVERSIONE: "🔄" };
 
 function evMsg(st, e) {
@@ -244,7 +254,7 @@ function evMsg(st, e) {
   const title = e.type === "INVERSIONE" ? `INVERSIONE → ${D(d)}` : `${e.type} ${D(d)}`;
   const dex = dexOf(e.coin);
   const coin = `<b>${esc(bareCoin(e.coin))}</b>${dex ? ` <i>(${esc(dex)})</i>` : ""}`;
-  const L = [`${ICON[e.type]} <b>${title}</b> — ${esc(e.n)} <i>· ${e.g === "A" ? "Cluster" : "Lettura"}</i>`];
+  const L = [`${ICON[e.type]} <b>${title}</b> — ${esc(e.n)} <i>· ${GROUP[e.g]}</i>`];
   if (e.type === "APERTURA") {
     L.push(`${coin} · ${qty(e.end)} (${usd(e.ntl)}) @ ${px(e.vwap)}`);
   } else if (e.type === "CHIUSURA") {
@@ -260,6 +270,7 @@ function evMsg(st, e) {
   const foot = [];
   if (e.nf > 1) foot.push(`${e.nf} blocchi · ${hhmm(e.t0)}–${hhmm(e.t1)} UTC`);
   if (e.g === "A" && !e.confirmed) foot.push("singolo wallet: non è un segnale di copy finché non arriva la conferma 2/3");
+  if (e.g === "C" && !e.confirmed && evNorm(e) === "ENTRATA") foot.push(`sotto ${usd(SOLO_MIN)}: non copiato`);
   if (foot.length) L.push(`<i>${foot.join(" · ")}</i>`);
   return L.join("\n");
 }
@@ -303,6 +314,21 @@ async function checkCluster(env, st, e, now, touched) {
   await copyOnSignal(env, st, norm, bare, dir, who, now);
 }
 
+// Gruppo C: trader indipendenti, ognuno è un segnale di copy da solo (niente conferma 2/3)
+async function checkSolo(env, st, e, now) {
+  const w = byAddr[e.w], bare = bareCoin(e.coin), norm = evNorm(e), dir = evDir(e);
+  const key = `SOLO|${e.w}|${bare}|${norm}|${dir}`;
+  if (st.sig.some((s) => s.key === key && now - s.t < 2 * CONFIRM_MS)) return;
+  // si entra solo su posizioni grandi; le uscite si seguono sempre se c'è una copia aperta
+  if (norm === "ENTRATA" && e.ntl < SOLO_MIN) return;
+  if (norm !== "ENTRATA" && !st.copy.pos[copyKey(w.n, bare)]) return;
+  e.confirmed = true;
+  const verb = { ENTRATA: "apre", AUMENTO: "aumenta", RIDUZIONE: "riduce", CHIUSURA: "chiude" }[norm];
+  pushSig(st, { type: "SOLO", key, pr: "ALTA", t: now, coin: bare, dir, ev: norm, who: [w.n],
+    txt: `${w.n} ${verb} ${D(dir).toLowerCase()} ${bare} · ${usd(e.ntl)}` });
+  await copyOnSignal(env, st, norm, bare, dir, [e.w], now, w.n);
+}
+
 async function checkRegime(env, st, e, now) {
   const w = byAddr[e.w];
   const bare = bareCoin(e.coin);
@@ -337,7 +363,7 @@ async function checkConsensus(env, st, now) {
     const L = A.filter((x) => x.dir > 0).length, S = A.filter((x) => x.dir < 0).length;
     const cdir = L >= 2 ? 1 : S >= 2 ? -1 : 0;
     if (!cdir) continue;
-    const same = list.filter((x) => x.w.g === "B" && x.dir === cdir);
+    const same = list.filter((x) => x.w.g !== "A" && x.dir === cdir);
     if (same.length) now_[`CONS|${bare}|${cdir}`] = { type: "CONS", pr: "ALTA", coin: bare, dir: cdir, who: same.map((x) => x.w.n),
       txt: `Cluster e ${same.map((x) => x.w.n).join(", ")} ${D(cdir).toLowerCase()} su ${bare}` };
     const opp = list.filter((x) => x.w.bear && x.dir === -cdir);
@@ -356,10 +382,13 @@ async function checkConsensus(env, st, now) {
   for (const k of Object.keys(st.cons)) if (!now_[k]) delete st.cons[k];
 }
 
-/* ─────────── copy virtuale (solo Gruppo A) ─────────── */
+/* ─────────── copy virtuale (Cluster confermato 2/3, oppure un wallet del Gruppo C da solo) ─────────── */
 
-function refFor(st, bare, dir, who) {
-  const order = [...WALLETS.filter((w) => w.ref), ...who.map((a) => byAddr[a])];
+// una posizione copiata per fonte e coin: "Cluster|ETH", "Whale-2|BTC"
+const copyKey = (src, bare) => src + "|" + bare;
+
+function refFor(st, bare, dir, who, src) {
+  const order = [...(src === "Cluster" ? WALLETS.filter((w) => w.ref) : []), ...who.map((a) => byAddr[a])];
   for (const w of order) {
     const p = findPos(st, w.a, bare);
     if (p && sgn(p.sz) === dir && p.ntl > 0) return { w, p, eq: eqTot(st, w.a), mark: p.ntl / Math.abs(p.sz) };
@@ -386,47 +415,51 @@ async function closeCopy(env, st, cp, mark, why, now) {
   st.copy.closed.unshift({ ...cp, exit: mark, t1: now, pnl, why });
   st.copy.closed = st.copy.closed.slice(0, 50);
   st.copy.realized += pnl;
-  delete st.copy.pos[cp.bare];
-  pushSig(st, { type: "COPY", pr: "ALTA", t: now, coin: cp.bare, dir: cp.dir, txt: `Chiudi copy ${D(cp.dir).toLowerCase()} ${cp.bare} · ${sUsd(pnl)} (${why})` });
+  delete st.copy.pos[copyKey(cp.src || "Cluster", cp.bare)];
+  pushSig(st, { type: "COPY", pr: "ALTA", t: now, coin: cp.bare, dir: cp.dir, who: [cp.src || "Cluster"], txt: `Chiudi copy ${D(cp.dir).toLowerCase()} ${cp.bare} · ${sUsd(pnl)} (${why})` });
   await tgSend(env,
-    `📋 <b>COPY · CHIUDI ${D(cp.dir)} ${esc(cp.bare)}</b>\n${qty(cp.sz)} @ ~${px(mark)} · PnL <b>${sUsd(pnl)}</b> (${pct(pnl / CAPITAL, 1)} del capitale)\n` +
+    `📋 <b>COPY ${esc(cp.src || "Cluster")} · CHIUDI ${D(cp.dir)} ${esc(cp.bare)}</b>\n${qty(cp.sz)} @ ~${px(mark)} · PnL <b>${sUsd(pnl)}</b> (${pct(pnl / CAPITAL, 1)} del capitale)\n` +
     `<i>${esc(why)} · durata ${dur(now - cp.t)} · esecuzione manuale</i>`);
 }
 
-async function copyOnSignal(env, st, norm, bare, dir, who, now) {
-  let cp = st.copy.pos[bare];
+async function copyOnSignal(env, st, norm, bare, dir, who, now, src = "Cluster") {
+  const key = copyKey(src, bare);
+  let cp = st.copy.pos[key];
+  const chi = src === "Cluster" ? "il Cluster" : src;
   if (norm === "CHIUSURA") {
     if (cp && cp.dir === dir) {
       const mark = await midOf(st, cp.coin);
-      if (mark) await closeCopy(env, st, cp, mark, "il Cluster chiude 2/3", now);
+      if (mark) await closeCopy(env, st, cp, mark, src === "Cluster" ? "il Cluster chiude 2/3" : `${src} chiude`, now);
     }
     return;
   }
   if (cp && cp.dir !== dir) {
     const mark = await midOf(st, cp.coin);
-    if (mark) await closeCopy(env, st, cp, mark, "il Cluster inverte", now);
+    if (mark) await closeCopy(env, st, cp, mark, `${chi} inverte`, now);
     cp = null;
   }
-  const ref = refFor(st, bare, dir, who);
+  const ref = refFor(st, bare, dir, who, src);
   if (!ref) return;
-  const target = (CAPITAL / ref.eq) * ref.p.ntl * COPY_FACTOR;
+  const R = rules(src);
+  const target = (CAPITAL / ref.eq) * ref.p.ntl * R.factor;
   const mark = ref.mark;
   const tgtSz = target / mark;
   const myLev = target / CAPITAL;
-  const refTxt = `<i>Rif. ${esc(ref.w.n)}: ${usd(ref.p.ntl)} su equity ${usd(ref.eq)} (${lev(ref.p.ntl / ref.eq)}) → metà leva</i>`;
+  const refTxt = `<i>Rif. ${esc(ref.w.n)}: ${usd(ref.p.ntl)} su equity ${usd(ref.eq)} (${lev(ref.p.ntl / ref.eq)}) → ${R.factor === 0.5 ? "metà" : R.factor === 0.25 ? "un quarto della" : nf(R.factor, 2) + "×"} leva</i>`;
+  const tag = `COPY ${esc(src)}`;
   const levWarn = myLev > LEV_RANGE ? `\n⚠️ Leva ${lev(myLev)} sul capitale: fuori dal range storico 1–2x` : "";
 
   if (!cp) {
     if (norm !== "ENTRATA") return; // non si entra a metà trade su un aumento o una riduzione
-    cp = st.copy.pos[bare] = {
+    cp = st.copy.pos[key] = {
       coin: ref.p.coin, bare, dir, sz: tgtSz, entry: mark, ntl0: target, t: now,
-      realized: 0, fund: 0, fundT: now, a5: false, aF: false, ref: ref.w.n,
+      realized: 0, fund: 0, fundT: now, a5: false, aF: false, ref: ref.w.n, src, stop: R.stop,
     };
-    const stopPx = mark - dir * (STOP * CAPITAL) / tgtSz;
-    pushSig(st, { type: "COPY", pr: "ALTA", t: now, coin: bare, dir, txt: `Apri copy ${D(dir).toLowerCase()} ${bare} · ${usd(target)} (${lev(myLev)})` });
+    const stopPx = mark - dir * (R.stop * CAPITAL) / tgtSz;
+    pushSig(st, { type: "COPY", pr: "ALTA", t: now, coin: bare, dir, who: [src], txt: `Apri copy ${D(dir).toLowerCase()} ${bare} · ${usd(target)} (${lev(myLev)})` });
     await tgSend(env,
-      `📋 <b>COPY · APRI ${D(dir)} ${esc(bare)}</b>\nNozionale <b>${usd(target)}</b> · ≈ ${qty(tgtSz)} ${esc(bare)} @ ~${px(mark)}\n` +
-      `Leva ${lev(myLev)} sul capitale ${usd(CAPITAL)} · stop −${usd(STOP * CAPITAL)} ≈ ${px(stopPx)}\n${refTxt}${levWarn}\n<i>Esecuzione manuale</i>`);
+      `📋 <b>${tag} · APRI ${D(dir)} ${esc(bare)}</b>\nNozionale <b>${usd(target)}</b> · ≈ ${qty(tgtSz)} ${esc(bare)} @ ~${px(mark)}\n` +
+      `Leva ${lev(myLev)} sul capitale ${usd(CAPITAL)} · stop −${usd(R.stop * CAPITAL)} ${stopPx > 0 ? "≈ " + px(stopPx) : "(oltre lo zero: posizione troppo piccola per raggiungerlo)"}\n${refTxt}${levWarn}\n<i>Esecuzione manuale</i>`);
     return;
   }
 
@@ -440,9 +473,9 @@ async function copyOnSignal(env, st, norm, bare, dir, who, now) {
   }
   const dq = tgtSz - cp.sz;
   cp.sz = tgtSz;
-  pushSig(st, { type: "COPY", pr: "ALTA", t: now, coin: bare, dir, txt: `${dq > 0 ? "Aumenta" : "Riduci"} copy ${bare} → ${usd(target)}` });
+  pushSig(st, { type: "COPY", pr: "ALTA", t: now, coin: bare, dir, who: [src], txt: `${dq > 0 ? "Aumenta" : "Riduci"} copy ${bare} → ${usd(target)}` });
   await tgSend(env,
-    `📋 <b>COPY · ${dq > 0 ? "AUMENTA" : "RIDUCI"} ${D(dir)} ${esc(bare)}</b>\n${dq > 0 ? "+" : "−"}${qty(dq)} ${esc(bare)} @ ~${px(mark)} → nozionale <b>${usd(target)}</b> (${lev(myLev)})\n${refTxt}${levWarn}\n<i>Esecuzione manuale</i>`);
+    `📋 <b>${tag} · ${dq > 0 ? "AUMENTA" : "RIDUCI"} ${D(dir)} ${esc(bare)}</b>\n${dq > 0 ? "+" : "−"}${qty(dq)} ${esc(bare)} @ ~${px(mark)} → nozionale <b>${usd(target)}</b> (${lev(myLev)})\n${refTxt}${levWarn}\n<i>Esecuzione manuale</i>`);
 }
 
 async function copyRisk(env, st, now) {
@@ -460,18 +493,19 @@ async function copyRisk(env, st, now) {
       if (!cp.aF && cp.fund > FUNDING_ALERT * ntl) {
         cp.aF = true;
         pushSig(st, { type: "RISK", pr: "MEDIA", t: now, coin: cp.bare, dir: cp.dir, txt: `Funding cumulato ${usd(cp.fund)} (${pct(cp.fund / ntl, 2)})` });
-        await tgSend(env, `💸 <b>FUNDING</b> · copy ${D(cp.dir)} ${esc(cp.bare)}\nCumulato ${usd(cp.fund)} = ${pct(cp.fund / ntl, 2)} del nozionale (soglia 0,5%)`);
+        await tgSend(env, `💸 <b>FUNDING</b> · copy ${esc(cp.src || "Cluster")} ${D(cp.dir)} ${esc(cp.bare)}\nCumulato ${usd(cp.fund)} = ${pct(cp.fund / ntl, 2)} del nozionale (soglia 0,5%)`);
       }
     }
 
     const pnl = copyPnl(cp, mark);
-    if (pnl <= -STOP * CAPITAL) {
-      await tgSend(env, `🛑 <b>STOP −10%</b> · copy ${D(cp.dir)} ${esc(cp.bare)}\nPnL ${sUsd(pnl)} @ ${px(mark)} — <b>chiudi manualmente</b>`);
-      await closeCopy(env, st, cp, mark, "stop −10% del capitale", now);
-    } else if (pnl <= -PRE_STOP * CAPITAL && !cp.a5) {
+    const stop = cp.stop ?? STOP;
+    if (pnl <= -stop * CAPITAL) {
+      await tgSend(env, `🛑 <b>STOP −${pct(stop)}</b> · copy ${esc(cp.src || "Cluster")} ${D(cp.dir)} ${esc(cp.bare)}\nPnL ${sUsd(pnl)} @ ${px(mark)} — <b>chiudi manualmente</b>`);
+      await closeCopy(env, st, cp, mark, `stop −${pct(stop)} del capitale`, now);
+    } else if (pnl <= -(stop / 2) * CAPITAL && !cp.a5) {
       cp.a5 = true;
       pushSig(st, { type: "RISK", pr: "ALTA", t: now, coin: cp.bare, dir: cp.dir, txt: `Copy ${cp.bare} a ${sUsd(pnl)}: metà strada dallo stop` });
-      await tgSend(env, `⚠️ <b>PRE-ALERT −5%</b> · copy ${D(cp.dir)} ${esc(cp.bare)}\nPnL ${sUsd(pnl)} @ ${px(mark)} · stop a ${sUsd(-STOP * CAPITAL)}`);
+      await tgSend(env, `⚠️ <b>PRE-ALERT −${pct(stop / 2)}</b> · copy ${esc(cp.src || "Cluster")} ${D(cp.dir)} ${esc(cp.bare)}\nPnL ${sUsd(pnl)} @ ${px(mark)} · stop a ${sUsd(-stop * CAPITAL)}`);
     }
   }
 }
@@ -486,14 +520,14 @@ async function equityWatch(env, st, now) {
       h.push([now, Math.round(eq)]);
       while (h.length > 49) h.shift();
     }
-    if (w.g !== "A") continue;
+    if (w.g === "B") continue;
     const old = h.find((x) => now - x[0] <= 25 * 3600e3 && now - x[0] >= 23 * 3600e3);
     if (!old) continue;
     const drop = (old[1] - eq) / old[1];
     if (drop > EQ_DROP && now - (st.eqAlert[w.a] || 0) > 12 * 3600e3) {
       st.eqAlert[w.a] = now;
       pushSig(st, { type: "RISK", pr: "ALTA", t: now, who: [w.n], txt: `${w.n}: equity −${pct(drop)} in 24h` });
-      await tgSend(env, `⚠️ <b>EQUITY CLUSTER</b> · ${esc(w.n)}\n−${pct(drop)} in 24h: ${usd(old[1])} → ${usd(eq)}\n<i>Drawdown o prelievo: controlla prima di seguire il prossimo segnale</i>`);
+      await tgSend(env, `⚠️ <b>EQUITY ${w.g === "A" ? "CLUSTER" : "COPY"}</b> · ${esc(w.n)}\n−${pct(drop)} in 24h: ${usd(old[1])} → ${usd(eq)}\n<i>Drawdown o prelievo: controlla prima di seguire il prossimo segnale</i>`);
     }
   }
 }
@@ -559,7 +593,9 @@ async function controlla(env) {
   const jobs = [];
   for (const [a, set] of Object.entries(want)) for (const d of set) jobs.push([a, d]);
   st.spot ||= {};
-  await Promise.all(WALLETS.map(async (w) => {
+  // il saldo spot cambia di rado: ogni wallet lo rilegge ogni 5 minuti (o se ha appena fatto fill), a turno
+  await Promise.all(WALLETS.map(async (w, i) => {
+    if (st.spot[w.a] != null && (tick + i) % 5 && !(fills[w.a] || []).length) return;
     try {
       const s = await hl({ type: "spotClearinghouseState", user: w.a });
       st.spot[w.a] = (s.balances || []).filter((b) => STABLES.has(b.coin)).reduce((x, b) => x + +b.total, 0);
@@ -590,6 +626,7 @@ async function controlla(env) {
   const live = [...touched].filter((e) => e.type && !e.quiet);
   for (const e of live) {
     if (e.g === "A") await checkCluster(env, st, e, now, touched);
+    if (e.g === "C") await checkSolo(env, st, e, now);
     await checkRegime(env, st, e, now);
   }
   for (const e of live) {
@@ -699,12 +736,12 @@ async function stato(env) {
       }
     }
     pos.sort((x, y) => y.ntl - x.ntl);
-    return { a: w.a, n: w.n, g: w.g, note: w.note, ref: !!w.ref, eq: eqTot(st, w.a), pos, eqh: st.eqh?.[w.a] || [] };
+    return { a: w.a, n: w.n, g: w.g, note: w.note, ref: !!w.ref, ...(w.g === "B" ? {} : rules(w.g === "A" ? "Cluster" : w.n)), eq: eqTot(st, w.a), pos, eqh: st.eqh?.[w.a] || [] };
   });
   const copy = Object.values(st.copy?.pos || {}).map((cp) => {
     const mark = markOf(st, cp.coin) || cp.entry;
     const pnl = copyPnl(cp, mark);
-    return { ...cp, mark, pnl, ntl: cp.sz * mark, stopPx: cp.entry - cp.dir * (STOP * CAPITAL + cp.realized - cp.fund) / cp.sz };
+    return { ...cp, mark, pnl, ntl: cp.sz * mark, stopPx: cp.entry - cp.dir * ((cp.stop ?? STOP) * CAPITAL + cp.realized - cp.fund) / cp.sz };
   });
   return {
     v: 13, t: now,

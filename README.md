@@ -1,7 +1,13 @@
 # Whale Desk v13
 
 - `worker.js` — Worker Cloudflare `whale-desk`: cron ogni minuto, alert Telegram, segnali combinati, copy virtuale. Stato in KV, chiave `s13`.
-- `dashboard/index.html` — dashboard: 3 wallet, posizioni, ordini in attesa, tabella dei trade, backtest del copy. Legge direttamente da Hyperliquid, file unico, tema chiaro/scuro.
+- `dashboard/index.html` — dashboard: Cluster-1, Petroliere e Rotatore con posizioni, ordini in attesa, tabella dei trade e backtest del copy. Legge direttamente da Hyperliquid, file unico, tema chiaro/scuro.
+
+## Wallet negli alert
+
+- **Gruppo A — Cluster** (3 conti, stesso operatore): copy solo con conferma 2 su 3, metà leva, stop 10%.
+- **Gruppo C — Copy diretto**: Petroliere `0xbd33…4200` e Rotatore `0x2d99…a351`, scelti dalla leaderboard di Hyperdash (equity > 1M, win rate ~80%+, swing di più giorni, trade medi da 2–3M $). Ogni entrata da almeno 1M $ di nozionale è un segnale di copy; un quarto della loro leva, stop 20%.
+- **Gruppo B — Lettura**: Ribassista e Inversore, per consenso, conflitto e inversioni di regime.
 - `_v12/`, `_v13/` — versioni precedenti.
 
 ## Deploy
