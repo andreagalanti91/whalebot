@@ -64,9 +64,14 @@ input,select{font:inherit;font-size:16px;color:var(--t1)}
 /* ═════════ TESTATA: brand + scelta wallet ═════════ */
 .top{position:fixed;top:0;left:0;right:0;z-index:50;padding:calc(var(--st) + 8px) calc(var(--gut) + var(--sr)) 10px calc(var(--gut) + var(--sl));
   background:var(--bar);-webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);border-bottom:.5px solid var(--bar-line)}
-.top-in{max-width:1120px;margin:0 auto}
-.row1{display:flex;align-items:center;gap:10px;height:34px;margin-bottom:8px}
-.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;letter-spacing:-.03em;flex:1}
+.top-in{max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr auto;grid-template-areas:"brand actions" "wallets wallets";gap:8px 10px;align-items:center}
+.brand{grid-area:brand;display:flex;align-items:center;gap:8px;font-weight:700;font-size:16px;letter-spacing:-.03em;height:34px}
+.actions{grid-area:actions;display:flex;align-items:center;gap:8px}
+.wallets{grid-area:wallets}
+@media (min-width:1024px){
+  .top-in{grid-template-columns:200px minmax(0,640px) 1fr;grid-template-areas:"brand wallets actions"}
+  .actions{justify-content:flex-end}
+}
 .brand i{width:8px;height:8px;border-radius:50%;background:var(--a);box-shadow:0 0 0 3px var(--a-soft)}
 .brand i.off{background:var(--t4);box-shadow:none}
 .ago{font-size:12px;color:var(--t3)}
@@ -95,16 +100,21 @@ input,select{font:inherit;font-size:16px;color:var(--t1)}
 @media (min-width:768px){
   .tabs{top:calc(var(--st) + 104px);bottom:auto;border-top:0;border-bottom:.5px solid var(--bar-line);padding:0 calc(var(--gut) + var(--sr)) 10px calc(var(--gut) + var(--sl))}
   .top{border-bottom:0}
-  .tabs-in{height:auto;max-width:1120px;padding:3px;border-radius:11px;background:var(--fill);gap:3px}
+  .tabs-in{height:auto;max-width:1280px;padding:3px;border-radius:11px;background:var(--fill);gap:3px}
   .tab{flex-direction:row;height:32px;border-radius:8px;gap:6px;color:var(--t2)}
   .tab svg{width:15px;height:15px} .tab span{font-size:13px}
   .tab[aria-selected="true"]{background:var(--card);color:var(--t1);box-shadow:0 1px 3px rgba(0,0,0,.12)}
   .tab .badge{position:static}
 }
+@media (min-width:1024px){
+  .tabs{top:calc(var(--st) + 62px)}
+  .tabs-in{max-width:1280px}
+}
 
 /* ═════════ LAYOUT ═════════ */
-main{max-width:1120px;margin:0 auto;padding:calc(var(--st) + 120px) calc(var(--gut) + var(--sr)) calc(var(--tab) + var(--sb) + 28px) calc(var(--gut) + var(--sl))}
+main{max-width:1280px;margin:0 auto;padding:calc(var(--st) + 120px) calc(var(--gut) + var(--sr)) calc(var(--tab) + var(--sb) + 28px) calc(var(--gut) + var(--sl))}
 @media (min-width:768px){main{padding-top:calc(var(--st) + 160px);padding-bottom:48px}}
+@media (min-width:1024px){main{padding-top:calc(var(--st) + 124px)}}
 .view{display:none}.view.on{display:block}
 @media (prefers-reduced-motion:no-preference){.view.on{animation:enter .3s var(--ease)}}
 @keyframes enter{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
@@ -112,7 +122,7 @@ h1{font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-.025em;margin:
 .lede{font-size:14.5px;color:var(--t2);margin:0 2px 16px;max-width:68ch;overflow-wrap:anywhere}
 .stack{display:flex;flex-direction:column;gap:12px}
 .cols{display:grid;gap:12px}
-@media (min-width:900px){.cols{grid-template-columns:1.1fr .9fr;align-items:start}}
+@media (min-width:900px){.cols{grid-template-columns:1.1fr .9fr;align-items:start}.cols.even{grid-template-columns:1fr 1fr;align-items:stretch}}
 .sec{font-size:13px;font-weight:600;color:var(--t2);margin:22px 4px 8px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .sec .m{font-weight:500;color:var(--t3);font-size:12px}
 .card{background:var(--card);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
@@ -144,6 +154,71 @@ h1{font-size:30px;line-height:1.1;font-weight:700;letter-spacing:-.025em;margin:
 .prow .d.r{text-align:right}
 .ladder{position:relative;height:6px;border-radius:3px;background:var(--fill);margin:8px 0 2px;grid-column:1/-1}
 .ladder i{position:absolute;top:-3px;width:2px;height:12px;border-radius:1px}
+
+/* card posizione: ogni numero ha la sua etichetta, il PnL comanda */
+.pgrid{display:grid;gap:12px}
+@media (min-width:900px){.pgrid{grid-template-columns:repeat(auto-fit,minmax(440px,1fr))}}
+.pcard{container-type:inline-size}
+.pc-body{display:grid;gap:0 28px}
+@container (min-width:760px){
+  .pc-body{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);align-items:center}
+  .pc-body .facts{margin-top:0}
+  .pc-val{font-size:32px}
+}
+.pc-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pc-coin{font-size:22px;font-weight:700;letter-spacing:-.025em;line-height:1}
+.pc-head .sp{flex:1}
+.pc-main{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-top:14px}
+.pc-main small,.lbl{display:block;font-size:12px;color:var(--t3);margin-bottom:4px;font-weight:500}
+.pc-val{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:26px;font-weight:600;letter-spacing:-.04em;line-height:1}
+.pc-pnl{text-align:right}
+.pc-pnl b{display:block;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:20px;font-weight:600;letter-spacing:-.03em;line-height:1.1}
+.pc-pnl span{font-family:var(--mono);font-size:12.5px}
+.rail{position:relative;height:44px;margin:38px 6px 4px}
+.rail .lab.up{top:-30px}
+.rail .bar{position:absolute;left:0;right:0;top:9px;height:4px;border-radius:2px;background:var(--fill)}
+.rail .seg{position:absolute;top:9px;height:4px;border-radius:2px}
+.rail .dot{position:absolute;top:5px;width:12px;height:12px;margin-left:-6px;border-radius:50%;border:2px solid var(--card)}
+.rail .lab{position:absolute;top:22px;transform:translateX(-50%);font-size:11px;font-family:var(--mono);color:var(--t3);white-space:nowrap;text-align:center;line-height:1.25}
+.rail .lab b{display:block;font-family:var(--font);font-weight:600;font-size:10.5px;color:var(--t2)}
+.facts{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--sep);border-radius:13px;overflow:hidden;margin-top:12px}
+@media (min-width:600px){.facts{grid-template-columns:repeat(3,1fr)}}
+.facts>div{background:var(--card2);padding:10px 12px;min-width:0}
+.facts b{display:block;font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:14.5px;font-weight:600;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.facts em{font-style:normal;font-family:var(--mono);font-size:11.5px;color:var(--t3)}
+
+/* ordini: un riassunto per asset e lato, poi la lista */
+.oc-title{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.oc-title .pc-coin{font-size:24px}
+.oc-sum{font-size:15px;line-height:1.5;margin-top:12px;color:var(--t2)}
+.oc-sum b{color:var(--t1);font-weight:600}
+.depth{margin-top:14px}
+.depth svg{display:block;width:100%;height:96px;overflow:visible}
+.depth .ax{position:relative;display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--t3);margin-top:4px}
+.depth .ax .now{position:absolute;top:0;transform:translateX(-50%);color:var(--t1);font-weight:600}
+.olist{margin-top:14px;border-radius:13px;overflow:hidden;background:var(--card2)}
+.orow{display:grid;grid-template-columns:1fr auto;grid-template-areas:"p q" "d v";gap:2px 12px;padding:11px 14px;border-top:.5px solid var(--sep)}
+.orow .ot{display:none}
+.orow .p{grid-area:p} .orow .q{grid-area:q} .orow .od{grid-area:d} .orow .ov{grid-area:v} .orow .ot{grid-area:t;text-align:left}
+.orow:first-child{border-top:0}
+.orow .p{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:15px}
+.orow .q{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:600;font-size:14px}
+.orow .s{font-size:12px;color:var(--t3);font-family:var(--mono)}
+.orow .s.r{text-align:right}
+@media (min-width:768px){
+  .orow{grid-template-columns:1fr .9fr 1.2fr 1fr 1.4fr;grid-template-areas:"p d q v t";align-items:center;gap:12px}
+  .orow .ot{text-align:right;display:block}
+  .orow .mob{display:none}
+  .orow.h{grid-template-areas:none}
+  .orow .q,.orow .s.r{text-align:right}
+  .orow.h{background:var(--card2);padding-top:9px;padding-bottom:9px}
+  .orow.h span{font-size:11.5px;font-weight:600;color:var(--t3);font-family:var(--font)}
+  .orow.h span:nth-child(n+3){text-align:right}
+}
+.orow.h{display:none}
+@media (min-width:768px){.orow.h{display:grid}}
+.more{width:100%;height:44px;font-size:14px;font-weight:600;color:var(--a-ink);border-top:.5px solid var(--sep);background:var(--card2);transition:background .15s}
+.more:active{background:var(--fill)}
 
 /* ═════════ TABELLA OPERAZIONI ═════════ */
 .chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--gut)) 12px;padding:0 var(--gut);overscroll-behavior-x:contain}
@@ -222,8 +297,8 @@ footer{font-size:12px;color:var(--t3);text-align:center;margin-top:32px;line-hei
 <body>
 
 <header class="top" id="top"><div class="top-in">
-  <div class="row1">
-    <div class="brand"><i id="dot"></i>Whale Desk</div>
+  <div class="brand"><i id="dot"></i>Whale Desk</div>
+  <div class="actions">
     <span class="ago m" id="ago"></span>
     <button class="icon-btn" id="refresh" aria-label="Aggiorna"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 11-2.6-6.4L21 8"/><path d="M21 3v5h-5"/></svg></button>
     <button class="icon-btn" id="openSet" aria-label="Impostazioni"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
@@ -242,18 +317,14 @@ footer{font-size:12px;color:var(--t3);text-align:center;margin-top:32px;line-hei
 <section class="view on" id="v-ora">
   <h1 id="oraTitle">Adesso</h1>
   <p class="lede m" id="oraLede" style="font-size:12.5px"></p>
-  <div class="cols">
-    <div class="stack">
-      <div class="card" id="eqCard"><div class="sk" style="width:40%"></div><div class="sk" style="width:70%;height:34px;margin-top:12px"></div></div>
-      <div class="sec" style="margin-top:10px"><span>Posizioni aperte</span><span class="m" id="posN"></span></div>
-      <div class="card flush" id="posList"><div style="padding:16px"><div class="sk"></div></div></div>
-    </div>
-    <div class="stack">
-      <div class="card" id="statCard"><div class="sk"></div></div>
-      <div class="sec" style="margin-top:10px"><span>Ultime operazioni</span></div>
-      <div class="card flush" id="lastTrades"></div>
-    </div>
+  <div class="cols even">
+    <div class="card" id="eqCard"><div class="sk" style="width:40%"></div><div class="sk" style="width:70%;height:34px;margin-top:12px"></div></div>
+    <div class="card" id="statCard"><div class="sk"></div></div>
   </div>
+  <div class="sec"><span>Posizioni aperte</span><span class="m" id="posN"></span></div>
+  <div class="pgrid" id="posList"><div class="card"><div class="sk"></div></div></div>
+  <div class="sec"><span>Ultime operazioni</span></div>
+  <div class="card flush" id="lastTrades"></div>
 </section>
 
 <section class="view" id="v-ordini">
@@ -410,9 +481,13 @@ async function loadWallet(w, light = false) {
   // il conto unificato tiene il collaterale in USDC spot: fa parte dell'equity
   const spotUsd = (spot?.balances || []).filter((b) => STABLES.has(b.coin)).reduce((s, b) => s + +b.total, 0);
   const ord = orders.flat().filter(Boolean);
+  const mids = {};
+  await Promise.all(["", ...new Set([...ord, ...pos].map((x) => dexOf(x.coin)).filter(Boolean))].map(async (dx) => {
+    mids[dx] = await post(dx ? { type: "allMids", dex: dx } : { type: "allMids" }).catch(() => ({}));
+  }));
   const eqHist = (port?.find?.(([k]) => k === "allTime")?.[1]?.accountValueHistory || []).map(([t, v]) => [t, +v]).filter((x) => x[1] > 0);
   pos.sort((x, y) => y.ntl - x.ntl);
-  const d = { t: Date.now(), fullAt: full ? Date.now() : prev.fullAt, eq: perpEq + spotUsd, perpEq, spotUsd, pos, ord, port, eqHist, fills };
+  const d = { t: Date.now(), fullAt: full ? Date.now() : prev.fullAt, eq: perpEq + spotUsd, perpEq, spotUsd, pos, ord, mids, port, eqHist, fills };
   d.trades = buildTrades(d);
   S.data[w.a] = d;
   return d;
@@ -665,13 +740,8 @@ function renderNow(d) {
       <div><small>Leva effettiva</small><b>${lev(gross / (d.eq || 1))}</b></div>
       <div><small>PnL aperto</small><b class="${tone(upnl)}">${sUsd(upnl)}</b></div></div>`;
   $("#posN").textContent = d.pos.length ? d.pos.length + "" : "";
-  $("#posList").innerHTML = d.pos.length ? d.pos.map((p) => {
-    const tr = d.trades.find((t) => t.coin === p.coin && t.status === "aperto");
-    return `<div class="prow">
-      <div class="c">${dirChip(sgn(p.sz))} ${esc(bare(p.coin))} ${dexTag(p.coin)}</div><div class="v">${usd(p.ntl)}</div>
-      <div class="d">${qty(p.sz)} @ ${px(p.entry)} → ${px(p.mark)}</div><div class="d r ${tone(p.upnl)}">${sUsd(p.upnl)}</div>
-      <div class="d">${pct(p.ntl / (d.eq || 1), 0)} equity${p.liq ? ` · liq ${px(p.liq)}` : ""}</div><div class="d r">${tr && !tr.partial ? "da " + dur(Date.now() - tr.t0) : ""}</div>
-    </div>`; }).join("") : `<div class="empty"><b>Nessuna posizione</b>Il wallet è flat in questo momento.</div>`;
+  $("#posList").innerHTML = d.pos.length ? d.pos.map((p) => posCard(d, p)).join("")
+    : `<div class="card"><div class="empty"><b>Nessuna posizione</b>Il wallet è flat in questo momento.</div></div>`;
 
   const s = stats(d.trades);
   $("#statCard").innerHTML = `<div class="between"><span class="sub" style="margin:0">Track record</span><span class="tag">${s.closed.length} trade chiusi</span></div>
@@ -687,6 +757,67 @@ function renderNow(d) {
     : `<div class="empty">Nessuna operazione nello storico.</div>`;
 }
 
+const unit = (c) => bare(c);
+const midOf = (d, coin) => +(d.mids?.[dexOf(coin)]?.[coin]) || d.pos.find((p) => p.coin === coin)?.mark || null;
+const posTxt = (q, c) => (Math.abs(q) < 1e-9 ? "flat" : `${q > 0 ? "long" : "short"} ${qty(q)} ${unit(c)}`);
+
+function posCard(d, p) {
+  const dir = sgn(p.sz), mark = p.mark, move = dir * (mark / p.entry - 1);
+  const tr = d.trades.find((t) => t.coin === p.coin && t.status === "aperto");
+  const liqDist = p.liq ? Math.abs(1 - p.liq / mark) : null;
+  // binario dei prezzi: liquidazione, entrata, prezzo attuale
+  const pts = [p.entry, mark, ...(p.liq ? [p.liq] : [])];
+  let lo = Math.min(...pts), hi = Math.max(...pts); const pad = (hi - lo) * .1 || mark * .02; lo -= pad; hi += pad;
+  const X = (v) => ((v - lo) / (hi - lo) * 100).toFixed(2);
+  const [a, b] = [Math.min(p.entry, mark), Math.max(p.entry, mark)];
+  const close = Math.abs(X(p.entry) - X(mark)) < 18;
+  // le etichette ai bordi si allineano verso l'interno invece di uscire dalla card
+  const L = (v) => { const x = +X(v); return `left:${x}%;transform:translateX(${x < 12 ? "-12%" : x > 88 ? "-88%" : "-50%"})`; };
+  return `<article class="card pcard">
+    <div class="pc-head">${dirChip(dir)}<span class="pc-coin">${esc(bare(p.coin))}</span>${dexOf(p.coin) ? `<span class="tag">${esc(dexOf(p.coin))}</span>` : ""}
+      <span class="sp"></span><span class="tag">leva ${lev(p.ntl / (d.eq || 1))}</span></div>
+    <div class="pc-body"><div>
+    <div class="pc-main">
+      <div><small>Valore della posizione</small><div class="pc-val">${usd(p.ntl)}</div></div>
+      <div class="pc-pnl"><small>PnL aperto</small><b class="${tone(p.upnl)}">${sUsd(p.upnl)}</b><span class="${tone(move)}">${sPct(move)} sul prezzo</span></div>
+    </div>
+    <div class="rail" aria-hidden="true">
+      <div class="bar"></div>
+      <div class="seg" style="left:${X(a)}%;width:${(X(b) - X(a)).toFixed(2)}%;background:${p.upnl >= 0 ? "var(--a)" : "var(--dn)"}"></div>
+      ${p.liq ? `<i class="dot" style="left:${X(p.liq)}%;background:var(--dn)"></i><span class="lab" style="${L(p.liq)}"><b>Liquidazione</b>${px(p.liq)}</span>` : ""}
+      <i class="dot" style="left:${X(p.entry)}%;background:var(--t3)"></i><span class="lab ${close ? "up" : ""}" style="${L(p.entry)}"><b>Entrata</b>${px(p.entry)}</span>
+      <i class="dot" style="left:${X(mark)}%;background:var(--t1)"></i><span class="lab" style="${L(mark)}"><b>Ora</b>${px(mark)}</span>
+    </div></div>
+    <div class="facts">
+      <div><span class="lbl">Quantità</span><b>${qty(p.sz)} ${esc(unit(p.coin))}</b></div>
+      <div><span class="lbl">Prezzo di entrata</span><b>${px(p.entry)} $</b></div>
+      <div><span class="lbl">Prezzo attuale</span><b>${px(mark)} $</b></div>
+      <div><span class="lbl">Liquidazione</span><b>${p.liq ? px(p.liq) + " $" : "—"}</b>${liqDist != null ? `<em>a ${pct(liqDist, 0)} dal prezzo</em>` : ""}</div>
+      <div><span class="lbl">Peso sull'equity</span><b>${pct(p.ntl / (d.eq || 1), 0)}</b></div>
+      <div><span class="lbl">Aperta da</span><b>${tr && !tr.partial ? dur(Date.now() - tr.t0) : "—"}</b>${p.fund ? `<em>funding ${sUsd(-p.fund)}</em>` : ""}</div>
+    </div></div>
+  </article>`;
+}
+
+function depthChart(rows, mark) {
+  const prices = [...rows.map((r) => r.price), mark];
+  let lo = Math.min(...prices), hi = Math.max(...prices); const pad = (hi - lo) * .04 || mark * .01; lo -= pad; hi += pad;
+  const N = 48, bins = Array.from({ length: N }, () => ({ b: 0, s: 0 }));
+  for (const r of rows) { const i = Math.min(N - 1, Math.floor((r.price - lo) / (hi - lo) * N)); bins[i][r.side > 0 ? "b" : "s"] += r.sz * r.price; }
+  const max = Math.max(...bins.map((x) => x.b + x.s), 1), w = 600 / N, H = 80;
+  const mx = (mark - lo) / (hi - lo) * 600;
+  const bars = bins.map((x, i) => {
+    let y = H, out = "";
+    for (const [k, c] of [["b", "var(--a)"], ["s", "var(--t3)"]]) if (x[k]) { const h = Math.max(2, x[k] / max * (H - 6)); y -= h; out += `<rect x="${(i * w + 1).toFixed(1)}" y="${y.toFixed(1)}" width="${(w - 2).toFixed(1)}" height="${h.toFixed(1)}" rx="1.5" fill="${c}"/>`; }
+    return out;
+  }).join("");
+  return `<div class="depth"><svg viewBox="0 0 600 96" preserveAspectRatio="none" role="img" aria-label="Distribuzione degli ordini per prezzo">
+    <line x1="0" x2="600" y1="${H}" y2="${H}" stroke="var(--sep)" vector-effect="non-scaling-stroke"/>
+    ${bars}
+    <line x1="${mx}" x2="${mx}" y1="0" y2="${H}" stroke="var(--t1)" stroke-width="1.5" stroke-dasharray="3 3" vector-effect="non-scaling-stroke"/>
+  </svg><div class="ax"><span>${px(lo)}</span><span class="now" style="left:${Math.min(Math.max(mx / 6, 14), 86).toFixed(1)}%">ora ${px(mark)}</span><span>${px(hi)}</span></div></div>`;
+}
+
 function renderOrders(d) {
   $("#bOrd").textContent = d.ord.length; $("#bOrd").classList.toggle("on", d.ord.length > 0);
   if (!d.ord.length) {
@@ -695,27 +826,62 @@ function renderOrders(d) {
   }
   const groups = {};
   for (const o of d.ord) (groups[o.coin] ||= []).push(o);
-  $("#ordList").innerHTML = Object.entries(groups).map(([coin, list]) => {
+  $("#ordList").innerHTML = `<div class="stack">` + Object.entries(groups).map(([coin, list]) => {
     const p = d.pos.find((x) => x.coin === coin);
-    const mark = p?.mark || +list[0].limitPx;
     const pos = p?.sz || 0;
     const rows = list.map((o) => {
       const side = o.side === "B" ? 1 : -1, price = +(o.isTrigger ? o.triggerPx : o.limitPx), sz = +o.sz;
-      const reduces = o.reduceOnly || (pos && side !== sgn(pos));
-      const effect = reduces ? (sz >= Math.abs(pos) - 1e-9 ? "chiude" : "riduce") : pos ? "aumenta" : "apre";
-      return { o, side, price, sz, effect, reduces, dist: price / mark - 1 };
-    }).sort((a, b) => Math.abs(a.dist) - Math.abs(b.dist));
-    const span = Math.max(...rows.map((r) => Math.abs(r.dist)), .01);
-    return `<div class="sec"><span>${esc(bare(coin))}${dexOf(coin) ? ` · ${esc(dexOf(coin))}` : ""}</span><span class="m">prezzo ${px(mark)}${pos ? ` · ${pos > 0 ? "long" : "short"} ${qty(pos)}` : ""}</span></div>
-      <div class="card flush">${rows.map((r) => `<div class="prow">
-        <div class="c"><span class="tag ${r.reduces ? "" : "hi"}">${r.effect}</span> ${r.side > 0 ? "Compra" : "Vende"} ${qty(r.sz)}</div>
-        <div class="v">${px(r.price)}</div>
-        <div class="d">${esc(r.o.orderType)}${r.o.isPositionTpsl ? " · TP/SL" : ""} · ${usd(r.sz * r.price)}</div>
-        <div class="d r">${sPct(r.dist)} dal prezzo</div>
-        <div class="ladder" aria-hidden="true"><i style="left:50%;background:var(--t3)"></i><i style="left:${50 + r.dist / span * 48}%;background:${r.reduces ? "var(--t2)" : "var(--a)"}"></i></div>
-      </div>`).join("")}</div>`;
-  }).join("");
+      return { o, side, price, sz, reduce: !!o.reduceOnly };
+    });
+    const mark = midOf(d, coin) || rows[0].price;
+    rows.forEach((r) => (r.dist = r.price / mark - 1));
+    rows.sort((a, b) => Math.abs(a.dist) - Math.abs(b.dist));
+    const C = esc(unit(coin));
+    // un riassunto per lato: cosa compra o vende, dove, e cosa diventa la posizione
+    const sides = [1, -1].map((side) => {
+      const rs = rows.filter((r) => r.side === side);
+      if (!rs.length) return "";
+      const q = rs.reduce((a, r) => a + r.sz, 0), v = rs.reduce((a, r) => a + r.sz * r.price, 0);
+      const pmin = Math.min(...rs.map((r) => r.price)), pmax = Math.max(...rs.map((r) => r.price));
+      const types = [...new Set(rs.map((r) => r.o.orderType))].join(", ").toLowerCase();
+      const opening = !pos || sgn(pos) === side;
+      let after = pos + side * q;
+      if (!opening && rs.every((r) => r.reduce)) after = sgn(pos) * Math.max(0, Math.abs(pos) - q);
+      const verb = side > 0 ? "Compra" : "Vende";
+      const what = opening ? (pos ? `aumenta il ${pos > 0 ? "long" : "short"}` : `apre un ${side > 0 ? "long" : "short"}`)
+        : Math.abs(after) < 1e-9 || sgn(after) !== sgn(pos) ? `chiude il ${pos > 0 ? "long" : "short"}` : `riduce il ${pos > 0 ? "long" : "short"}`;
+      const range = pmin === pmax ? `a <b>${px(pmin)} $</b> (${sPct(pmin / mark - 1)} dal prezzo)` :
+        `tra <b>${px(pmin)}</b> e <b>${px(pmax)} $</b> (da ${sPct(Math.min(pmin, pmax) / mark - 1)} a ${sPct(Math.max(pmin, pmax) / mark - 1)} dal prezzo)`;
+      return `<p class="oc-sum"><span class="tag ${opening ? "hi" : ""}">${what}</span><br>
+        <b>${verb} ${qty(q)} ${C}</b> per ${usd(v)} con ${rs.length} ${rs.length === 1 ? "ordine" : "ordini"} ${esc(types)} ${range}.
+        Se ${rs.length === 1 ? "scatta" : "scattano tutti"}: ${posTxt(pos, coin)} → <b>${posTxt(after, coin)}</b>, prezzo medio ${px(v / q)} $.</p>`;
+    }).join("");
+    const open = S.ordAll?.has(coin), shown = open ? rows : rows.slice(0, 8);
+    return `<article class="card">
+      <div class="oc-title">${p ? dirChip(sgn(pos)) : ""}<span class="pc-coin">${C}</span>${dexOf(coin) ? `<span class="tag">${esc(dexOf(coin))}</span>` : ""}
+        <span class="sp" style="flex:1"></span><span class="sub m" style="margin:0">prezzo ${px(mark)} $ · ${p ? posTxt(pos, coin) : "nessuna posizione"}</span></div>
+      ${sides}
+      ${depthChart(rows, mark)}
+      <div class="olist">
+        <div class="orow h"><span>Prezzo</span><span>Distanza</span><span>Quantità</span><span>Valore</span><span>Tipo</span></div>
+        ${shown.map((r) => `<div class="orow">
+          <span class="p ${r.side > 0 ? "pos" : ""}">${px(r.price)} $</span>
+          <span class="q">${r.side > 0 ? "+" : "−"}${qty(r.sz)} ${C}</span>
+          <span class="s od">${sPct(r.dist)} dal prezzo<span class="mob"> · ${esc(r.o.orderType)}${r.reduce ? " · solo riduzione" : ""}</span></span>
+          <span class="s r ov">${usd(r.sz * r.price)}</span>
+          <span class="s ot">${r.side > 0 ? "Compra" : "Vende"} · ${esc(r.o.orderType)}${r.reduce ? " · solo riduzione" : ""}</span>
+        </div>`).join("")}
+        ${rows.length > 8 ? `<button class="more" data-coin="${esc(coin)}">${open ? "Mostra i più vicini" : `Mostra tutti i ${rows.length} ordini`}</button>` : ""}
+      </div>
+    </article>`;
+  }).join("") + `</div>`;
 }
+$("#ordList").addEventListener("click", (e) => {
+  const b = e.target.closest(".more"); if (!b) return;
+  S.ordAll ||= new Set();
+  const c = b.dataset.coin; S.ordAll.has(c) ? S.ordAll.delete(c) : S.ordAll.add(c);
+  renderOrders(D());
+});
 
 const TF = [["tutte", "Tutte"], ["aperte", "Aperte"], ["vinte", "In utile"], ["perse", "In perdita"]];
 const COLS = [
